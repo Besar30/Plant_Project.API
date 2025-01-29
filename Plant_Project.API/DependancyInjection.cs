@@ -27,6 +27,7 @@ namespace Plant_Project.API
             services.AddSwaggerGen();
             return services;
         }
+        //sdcnsdnc 
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
