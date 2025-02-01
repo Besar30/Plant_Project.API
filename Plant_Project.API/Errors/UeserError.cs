@@ -12,5 +12,9 @@ namespace Plant_Project.API.Errors
 
         public static readonly Error InvalidRefreshToken =
             new("User.InvalidRefreshToken", "Invalid refresh token");
+        public static readonly Error DuplicateEmail =
+            new("User.Email Duplicated", "This Email is already Used");
+        public static readonly Error PasswordNotComfirmed =
+            new("User.Password Not Comfirmed", "password not comfirmed");
     }
 }
