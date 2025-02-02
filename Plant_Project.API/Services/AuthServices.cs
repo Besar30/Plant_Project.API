@@ -81,9 +81,51 @@ namespace Plant_Project.API.Services
             await _userManager.UpdateAsync(user);
             return Result.Success();
         }
+
+        public async Task<Result<AuthRespons>> RegisterAsync(RegisterRequestDTO Request, CancellationToken cancellationToken = default)
+        {
+
+            var EmailIsExist=await _userManager.Users.AnyAsync(x=>x.Email== Request.Email,cancellationToken);
+
+            if (EmailIsExist)
+                return Result.Failure<AuthRespons>(UeserError.DuplicateEmail);
+
+            if(Request.Password!=Request.ComfirmPassword)
+                return Result.Failure<AuthRespons>(UeserError.PasswordNotComfirmed);
+
+            var user = new ApplicationUser
+            {
+                Email = Request.Email,
+                UserName = Request.UserName,
+                FirstName=Request.UserName
+            };
+             var result=await _userManager.CreateAsync(user,Request.Password);
+            if (result.Succeeded)
+            {
+                var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+                var refreshToken = GenerateRefreshToken();
+                var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
+                user.RefreshTokens.Add(new RefreshToken
+                {
+                    Token = refreshToken,
+                    ExpiresOn = refreshTokenEXpirationDays
+                });
+                await _userManager.UpdateAsync(user);
+                //return authrespons
+                var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
+                return Result.Success<AuthRespons>(resultt);
+
+            }
+            //badRequest
+            var error = result.Errors.First();
+            return Result.Failure<AuthRespons>(new Error(error.Code, error.Description));
+                
+        }
         private string GenerateRefreshToken()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
+
+       
     }
 }

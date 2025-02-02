@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Plant_Project.API.Abstraction;
@@ -46,6 +47,12 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                 Ok() :
                 result.ToProblem(StatusCodes.Status400BadRequest);
+        }
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
+        {
+            var result = await _authServices.RegisterAsync(Request, cancellationToken);
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblem(StatusCodes.Status400BadRequest);
         }
     }
 }

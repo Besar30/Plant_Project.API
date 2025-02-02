@@ -27,6 +27,7 @@ namespace Plant_Project.API
             services.AddSwaggerGen();
             return services;
         }
+        //sdcnsdnc 
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
@@ -35,9 +36,9 @@ namespace Plant_Project.API
 
             var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
             services.AddOptions<JwtOptions>()
-               .BindConfiguration(JwtOptions.SectionName)
-               .ValidateDataAnnotations()
-               .ValidateOnStart();
+                 .BindConfiguration(JwtOptions.SectionName)
+                 .ValidateDataAnnotations()
+                 .ValidateOnStart();
 
             services.AddAuthentication(options =>
             {
@@ -59,6 +60,11 @@ namespace Plant_Project.API
             };
 
         });
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
+            });
             return services;
         }
         public static IServiceCollection AddValidationConfig(this IServiceCollection services)
