@@ -7,7 +7,7 @@ namespace Plant_Project.API.contracts.Authentication
     {
         public RegiserRequestValidation() {
             RuleFor(x => x.UserName).NotEmpty().Length(3,100);
-          RuleFor(x => x.Password).NotEmpty().Matches(RegexPattern.pattern).
+          RuleFor(x => x.Password).NotEmpty().Matches(RegexPatterns.Password).
                 WithMessage("Password should have LowerCase and UpperCase and Number and NonAlpapitic");
             RuleFor(x => x.Email).NotEmpty()
                 .EmailAddress();

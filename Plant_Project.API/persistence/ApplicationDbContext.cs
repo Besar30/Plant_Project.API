@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Plant_Project.API.Entities;
-using System.Reflection;
+
 
 namespace Plant_Project.API.persistence
 {

@@ -23,7 +23,7 @@ namespace Plant_Project.API.Controllers
         {
             var result = await _authServices.GetTokenaync(Request.Email, Request.Password, cancellationToken);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
+            return result.IsSuccess ? Ok(result) : result.ToProblem();
         }
 
 
@@ -34,7 +34,7 @@ namespace Plant_Project.API.Controllers
 
             return result.IsSuccess ?
                 Ok(result) :
-                result.ToProblem(StatusCodes.Status400BadRequest);
+                result.ToProblem();
 
         }
 
@@ -46,13 +46,13 @@ namespace Plant_Project.API.Controllers
 
             return result.IsSuccess ?
                 Ok() :
-                result.ToProblem(StatusCodes.Status400BadRequest);
+                result.ToProblem();
         }
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
         {
             var result = await _authServices.RegisterAsync(Request, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblem(StatusCodes.Status400BadRequest);
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
         }
     }
 }

@@ -1,13 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Plant_Project.API.Authentication;
-using Plant_Project.API.Services;
-using System.Reflection;
-using System.Text;
-
+﻿
 namespace Plant_Project.API
 {
     public static class DependancyInjection
@@ -18,6 +9,7 @@ namespace Plant_Project.API
             services.AddAddSwaggerServices();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IUserService, UserService>();
             services.AddAuthConfig(configuration);
             services.AddValidationConfig();
             return services; 
