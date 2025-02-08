@@ -1,5 +1,5 @@
-﻿using Plant_Project.API.Abstraction;
-using Plant_Project.API.contracts.Authentication;
+﻿
+using Plant_Project.API.Contracts.Authentication;
 
 namespace Plant_Project.API.Services
 {
@@ -9,5 +9,7 @@ namespace Plant_Project.API.Services
         Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default);
         Task<Result> RevokeRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default);
         Task<Result<AuthRespons>> RegisterAsync(RegisterRequestDTO RegisterReq, CancellationToken cancellationToken = default);
-    }
+        Task<Result> SendResetPasswordCodeAsync(string email);
+		
+	}
 }

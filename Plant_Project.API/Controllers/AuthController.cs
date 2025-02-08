@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Plant_Project.API.Abstraction;
 using Plant_Project.API.Authentication;
 using Plant_Project.API.contracts.Authentication;
+using Plant_Project.API.Contracts.Authentication;
 using Plant_Project.API.Services;
 
 namespace Plant_Project.API.Controllers
@@ -54,5 +55,14 @@ namespace Plant_Project.API.Controllers
             var result = await _authServices.RegisterAsync(Request, cancellationToken);
             return result.IsSuccess ? Ok(result.Value) : result.ToProblem();
         }
-    }
+		[HttpPost("forget-password")]
+		public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request)
+		{
+			var result = await _authServices.SendResetPasswordCodeAsync(request.Email);
+
+			return result.IsSuccess ? Ok() : result.ToProblem();
+		}
+
+	
+	}
 }

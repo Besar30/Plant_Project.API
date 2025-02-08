@@ -18,5 +18,9 @@ namespace Plant_Project.API.Errors
 
 		public static readonly Error PasswordNotComfirmed =
             new("User.Password Not Comfirmed", "password not comfirmed", StatusCodes.Status400BadRequest);
-    }
+		
+		public static readonly Error InvalidCode =
+			new("User.InvalidCode", "Invalid code", StatusCodes.Status401Unauthorized);
+
+	}
 }

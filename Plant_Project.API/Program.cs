@@ -1,14 +1,10 @@
-﻿using Plant_Project.API;
+﻿
+using Plant_Project.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependecies(builder.Configuration);
-//database
-var ConnectionString = builder.Configuration.
-    GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(ConnectionString));
 
- 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,6 +15,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// url/jobs
+app.UseHangfireDashboard("/jobs", new DashboardOptions
+{
+	Authorization =
+	[
+		//new HangfireCustomBasicAuthenticationFilter
+		//{
+		//	User = app.Configuration.GetValue<string>("HangfireSettings:Username"),
+		//	Pass = app.Configuration.GetValue<string>("HangfireSettings:Password")
+		//}
+	],
+	DashboardTitle = "PlantOpia Dashboard",
+	//IsReadOnlyFunc = (DashboardContext conext) => true
+});
 
 app.UseAuthorization();
 

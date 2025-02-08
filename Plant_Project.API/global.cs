@@ -12,6 +12,12 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Authorization;
 global using System.Reflection;
 global using Mapster;
+global using System.Security.Cryptography;
+global using Hangfire;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Identity.UI.Services;
+global using Microsoft.AspNetCore.WebUtilities;
+global using HangfireBasicAuthenticationFilter;
 
 
 
@@ -20,8 +26,9 @@ global using Mapster;
 
 
 
-
-//global using Plant_Project.API.Contracts.Users;
+global using Plant_Project.API.contracts.Authentication;
+global using Plant_Project.API.Errors;
+global using Plant_Project.API.Helpers;
 global using Plant_Project.API.contracts.Users;
 global using Plant_Project.API.persistence;
 global using Plant_Project.API.Entities;

@@ -1,4 +1,6 @@
 ﻿
+using Plant_Project.API.Settings;
+
 namespace Plant_Project.API
 {
     public static class DependancyInjection
@@ -6,13 +8,32 @@ namespace Plant_Project.API
        public static IServiceCollection AddDependecies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
+
             services.AddAddSwaggerServices();
-            services.AddScoped<IAuthServices, AuthServices>();
-            services.AddScoped<IJwtProvider, JwtProvider>();
+
+			services.AddAuthConfig(configuration);
+
+			//database
+			var ConnectionString = configuration.GetConnectionString("DefaultConnection");
+
+			services.AddDbContext<ApplicationDbContext>(options => 
+                options.UseSqlServer(ConnectionString));
+            
+
+			services.AddBackgroundJobsConfig(configuration);
+
+			services.AddScoped<IAuthServices, AuthServices>();
+			services.AddScoped<IEmailSender, EmailService>();
+			services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IUserService, UserService>();
-            services.AddAuthConfig(configuration);
+
             services.AddValidationConfig();
-            return services; 
+
+			services.AddHttpContextAccessor();
+
+			services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+
+			return services; 
         }
         public static IServiceCollection AddAddSwaggerServices(this IServiceCollection services){
             services.AddEndpointsApiExplorer();
@@ -24,7 +45,8 @@ namespace Plant_Project.API
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
             services.AddIdentity<ApplicationUser,IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddDefaultTokenProviders();
 
             var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
             services.AddOptions<JwtOptions>()
@@ -65,5 +87,18 @@ namespace Plant_Project.API
                AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             return services;
         }
-    }
+		private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services,
+		IConfiguration configuration)
+		{
+			services.AddHangfire(config => config
+				.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+				.UseSimpleAssemblyNameTypeSerializer()
+				.UseRecommendedSerializerSettings()
+				.UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection")));
+
+			services.AddHangfireServer();
+
+			return services;
+		}
+	}
 }

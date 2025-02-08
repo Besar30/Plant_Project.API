@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
-using Plant_Project.API.Abstraction;
-using Plant_Project.API.Authentication;
-using Plant_Project.API.contracts.Authentication;
+﻿
+
+using Plant_Project.API.Contracts.Authentication;
 using Plant_Project.API.Errors;
-using System.Security.Cryptography;
 
 namespace Plant_Project.API.Services;
 
 public class AuthServices(
     UserManager<ApplicationUser> userManager,
     IJwtProvider jwtProvider,
-    ILogger<AuthServices> logger
-
+    ILogger<AuthServices> logger,
+    IEmailSender emailSender,
+    IHttpContextAccessor httpContextAccessor
     ) : IAuthServices
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
     private readonly int _refreshTokenExpiryDays = 14;
     private readonly ILogger<AuthServices> _logger = logger;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IEmailSender _emailSender = emailSender;
 
     public async Task<Result<AuthRespons>> GetTokenaync(string email, string password, CancellationToken cancellationToken = default)
     {
@@ -133,21 +133,37 @@ public class AuthServices(
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    //public async Task<Result> SendResetPasswordCodeAsync(string email)
-    //{
-    //    if (await _userManager.FindByEmailAsync(email) is not { } user)
-    //        return Result.Success();
+    public async Task<Result> SendResetPasswordCodeAsync(string email)
+    {
+        if (await _userManager.FindByEmailAsync(email) is not { } user)
+            return Result.Success();
 
-    //    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-    //    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-    //    _logger.LogInformation("Reset code: {code}", code);
+        _logger.LogInformation("Reset code: {code}", code);
 
-    //    await SendResetPasswordEmail(user, code);
+        await SendResetPasswordEmail(user, code);
 
-    //    return Result.Success();
+        return Result.Success();
 
-    //}
+    }
+    private async Task SendResetPasswordEmail(ApplicationUser user, string code)
+    {
+        var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
 
+        var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+            templateModel: new Dictionary<string, string>
+            {
+                { "{{name}}", user.FirstName },
+                { "{{action_url}}", $"{origin}/auth/forgetPassword?email={user.Email}&code={code}" }
+            }
+        );
+
+        BackgroundJob.Enqueue(() => _emailSender.SendEmailAsync(user.Email!, "✅ PlantOpia: Change Password", emailBody));
+
+        await Task.CompletedTask;
+    }
 }
+
 
