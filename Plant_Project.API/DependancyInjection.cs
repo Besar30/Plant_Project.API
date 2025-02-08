@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Plant_Project.API.Authentication;
+using Plant_Project.API.contracts.Users;
 using Plant_Project.API.Services;
 using System.Reflection;
 using System.Text;
@@ -18,7 +20,10 @@ namespace Plant_Project.API
             services.AddAddSwaggerServices();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IUserServices, UserServices>();
             services.AddAuthConfig(configuration);
+            var config = TypeAdapterConfig.GlobalSettings;
+            config.NewConfig<ApplicationUser, UserProfileResponse>();
             services.AddValidationConfig();
             return services; 
         }
