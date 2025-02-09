@@ -6,5 +6,7 @@ namespace Plant_Project.API.Services
     public interface IUserServices
     {
         public Task<Result<UserProfileResponse>> GetProfileAsync(String UserId);
+        public Task<Result> UpdateProfileAsync(string UserId,UpdateProfileRequest updateProfileRequest);
+        public Task<Result> ChangePasswordAsync(String UserId, ChangePasswordRequest request);
     }
 }

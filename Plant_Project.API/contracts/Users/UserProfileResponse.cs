@@ -3,7 +3,9 @@
     public record UserProfileResponse(
         string UserName,
         string Email,
-        String FirstName
+        String FirstName,
+        string LastName
+
         );
  
 }
