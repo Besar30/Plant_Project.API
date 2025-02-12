@@ -1,6 +1,4 @@
-﻿using Plant_Project.API.Contracts.Users;
-
-namespace Plant_Project.API.Services;
+﻿namespace Plant_Project.API.Services;
 
 public class UserService(UserManager<ApplicationUser> userManager): IUserService
 {

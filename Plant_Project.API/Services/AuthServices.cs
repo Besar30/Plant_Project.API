@@ -1,7 +1,5 @@
 ﻿
-
-using Plant_Project.API.Contracts.Authentication;
-using Plant_Project.API.Errors;
+using Microsoft.EntityFrameworkCore;
 
 namespace Plant_Project.API.Services;
 
@@ -10,8 +8,9 @@ public class AuthServices(
     IJwtProvider jwtProvider,
     ILogger<AuthServices> logger,
     IEmailSender emailSender,
-    IHttpContextAccessor httpContextAccessor
-    ) : IAuthServices
+    IHttpContextAccessor httpContextAccessor,
+	ApplicationDbContext context
+	) : IAuthServices
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
@@ -19,8 +18,8 @@ public class AuthServices(
     private readonly ILogger<AuthServices> _logger = logger;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IEmailSender _emailSender = emailSender;
-
-    public async Task<Result<AuthRespons>> GetTokenaync(string email, string password, CancellationToken cancellationToken = default)
+	private readonly ApplicationDbContext _context = context;
+	public async Task<Result<AuthRespons>> GetTokenaync(string email, string password, CancellationToken cancellationToken = default)
     {
         //check email correct
         var user = await _userManager.FindByEmailAsync(email);
@@ -32,12 +31,14 @@ public class AuthServices(
         var isvalidpassword = await _userManager.CheckPasswordAsync(user, password);
         if (isvalidpassword == false)
         {
-            return Result.Failure<AuthRespons>(UeserError.InvalidCredentials);
+			return Result.Failure<AuthRespons>(UeserError.InvalidCredentials);
 
         }
-        //generate jwt
-        var (token, expiresIn) = _jwtProvider.GenerateToken(user);
-        var refreshToken = GenerateRefreshToken();
+		//generate jwt
+      
+		var (userRoles, userPermissions) = await GetUserRolesAndPermissions(user, cancellationToken);
+		var (token, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
+		var refreshToken = GenerateRefreshToken();
         var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
         user.RefreshTokens.Add(new RefreshToken
         {
@@ -54,14 +55,25 @@ public class AuthServices(
     public async Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
     {
         var userId = _jwtProvider.validationToken(Token);
-        if (userId is null) return Result.Failure<AuthRespons>(UeserError.InvalidJwtToken);
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return Result.Failure<AuthRespons>(UeserError.InvalidJwtToken);
-        var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == RefreshToken && x.IsActive);
-        if (userRefreshToken == null) return Result.Failure<AuthRespons>(UeserError.InvalidRefreshToken);
-        userRefreshToken.RevokedOn = DateTime.UtcNow;
 
-        var (Newtoken, expiresIn) = _jwtProvider.GenerateToken(user);
+        if (userId is null) 
+            return Result.Failure<AuthRespons>(UeserError.InvalidJwtToken);
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null) 
+            return Result.Failure<AuthRespons>(UeserError.InvalidJwtToken);
+
+        var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == RefreshToken && x.IsActive);
+        
+        if (userRefreshToken == null) 
+            return Result.Failure<AuthRespons>(UeserError.InvalidRefreshToken);
+        
+        userRefreshToken.RevokedOn = DateTime.UtcNow;
+		var (userRoles, userPermissions) = await GetUserRolesAndPermissions(user, cancellationToken);
+
+
+		var (Newtoken, expiresIn) = _jwtProvider.GenerateToken(user,userRoles,userPermissions);
         var NewrefreshToken = GenerateRefreshToken();
         var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
         user.RefreshTokens.Add(new RefreshToken
@@ -109,7 +121,10 @@ public class AuthServices(
         var result = await _userManager.CreateAsync(user, Request.Password);
         if (result.Succeeded)
         {
-            var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+			await _userManager.AddToRoleAsync(user, DefaultRoles.Member);
+
+			var (userRoles, userPermissions) = await GetUserRolesAndPermissions(user, cancellationToken);
+			var (token, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
             var refreshToken = GenerateRefreshToken();
             var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
             user.RefreshTokens.Add(new RefreshToken
@@ -164,6 +179,31 @@ public class AuthServices(
 
         await Task.CompletedTask;
     }
+	private async Task<(IEnumerable<string> roles, IEnumerable<string> permissions)> GetUserRolesAndPermissions(ApplicationUser user, CancellationToken cancellationToken)
+	{
+		var userRoles = await _userManager.GetRolesAsync(user);
+
+		//var userPermissions = await _context.Roles
+		//    .Join(_context.RoleClaims,
+		//        role => role.Id,
+		//        claim => claim.RoleId,
+		//        (role, claim) => new { role, claim }
+		//    )
+		//    .Where(x => userRoles.Contains(x.role.Name!))
+		//    .Select(x => x.claim.ClaimValue!)
+		//    .Distinct()
+		//    .ToListAsync(cancellationToken);
+
+		var userPermissions = await (from r in _context.Roles
+									 join p in _context.RoleClaims
+									 on r.Id equals p.RoleId
+									 where userRoles.Contains(r.Name!)
+									 select p.ClaimValue!)
+									 .Distinct()
+									 .ToListAsync(cancellationToken);
+
+		return (userRoles, userPermissions);
+	}
 }
 
 

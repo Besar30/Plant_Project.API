@@ -1,7 +1,4 @@
-﻿
-using Plant_Project.API.Contracts.Users;
-
-namespace Plant_Project.API.Controllers;
+﻿namespace Plant_Project.API.Controllers;
 [Route("me")]
 [ApiController]
 [Authorize]

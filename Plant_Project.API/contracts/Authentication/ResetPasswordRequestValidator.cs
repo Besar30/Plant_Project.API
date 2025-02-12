@@ -1,4 +1,6 @@
-﻿namespace Plant_Project.API.Contracts.Authentication;
+﻿using Plant_Project.API.Abstraction.Const.Pattern;
+
+namespace Plant_Project.API.Contracts.Authentication;
 
 public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequest>
 {

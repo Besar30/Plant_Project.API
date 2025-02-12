@@ -1,7 +1,4 @@
-﻿
-using Plant_Project.API.Contracts.Authentication;
-
-namespace Plant_Project.API.Services
+﻿namespace Plant_Project.API.Services
 {
     public interface IAuthServices
     {

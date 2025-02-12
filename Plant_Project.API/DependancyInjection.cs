@@ -1,4 +1,5 @@
 ﻿
+using Plant_Project.API.Authentication.Filters;
 using Plant_Project.API.Settings;
 
 namespace Plant_Project.API
@@ -24,7 +25,6 @@ namespace Plant_Project.API
 
 			services.AddScoped<IAuthServices, AuthServices>();
 			services.AddScoped<IEmailSender, EmailService>();
-			services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddValidationConfig();
@@ -43,12 +43,19 @@ namespace Plant_Project.API
         //sdcnsdnc 
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-            services.AddIdentity<ApplicationUser,IdentityRole>()
+            //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+
+            services.AddIdentity<ApplicationUser,ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
-            var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+			services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+			services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+
+			services.AddSingleton<IJwtProvider, JwtProvider>();
+
+			var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+
             services.AddOptions<JwtOptions>()
                  .BindConfiguration(JwtOptions.SectionName)
                  .ValidateDataAnnotations()

@@ -17,8 +17,7 @@ global using Hangfire;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Identity.UI.Services;
 global using Microsoft.AspNetCore.WebUtilities;
-global using HangfireBasicAuthenticationFilter;
-
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 
@@ -36,5 +35,5 @@ global using Plant_Project.API.Authentication;
 global using Plant_Project.API.Services;
 global using Plant_Project.API.Extensions;
 global using Plant_Project.API.Abstraction;
-global using Plant_Project.API.Const.Pattern;
+global using Plant_Project.API.Abstractions.Consts;
 

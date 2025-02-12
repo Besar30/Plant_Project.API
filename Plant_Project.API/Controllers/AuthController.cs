@@ -1,12 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Plant_Project.API.Abstraction;
-using Plant_Project.API.Authentication;
-using Plant_Project.API.contracts.Authentication;
-using Plant_Project.API.Contracts.Authentication;
-using Plant_Project.API.Services;
+﻿using Plant_Project.API.Contracts.Authentication;
 
 namespace Plant_Project.API.Controllers
 {
