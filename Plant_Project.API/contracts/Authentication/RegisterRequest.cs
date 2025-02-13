@@ -1,6 +1,6 @@
 ﻿namespace Plant_Project.API.contracts.Authentication
 {
-    public record RegisterRequestDTO(
+    public record RegisterRequest(
          string UserName,
          string Email,
          string Password,

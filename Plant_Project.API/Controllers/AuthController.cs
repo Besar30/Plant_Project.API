@@ -42,7 +42,7 @@ namespace Plant_Project.API.Controllers
                 result.ToProblem();
         }
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequest Request,CancellationToken cancellationToken)
         {
             var result = await _authServices.RegisterAsync(Request, cancellationToken);
             return result.IsSuccess ? Ok(result.Value) : result.ToProblem();

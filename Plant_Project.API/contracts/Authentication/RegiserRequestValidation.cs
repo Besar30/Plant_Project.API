@@ -1,9 +1,7 @@
-﻿using FluentValidation;
-using Plant_Project.API.Abstraction.Const.Pattern;
-
+﻿
 namespace Plant_Project.API.contracts.Authentication
 {
-	public class RegiserRequestValidation:AbstractValidator<RegisterRequestDTO>
+	public class RegiserRequestValidation:AbstractValidator<RegisterRequest>
     {
         public RegiserRequestValidation() {
             RuleFor(x => x.UserName).NotEmpty().Length(3,100);

@@ -1,5 +1,6 @@
 ﻿
-using Plant_Project.API.Authentication.Filters;
+
+using MapsterMapper;
 using Plant_Project.API.Settings;
 
 namespace Plant_Project.API
@@ -10,7 +11,8 @@ namespace Plant_Project.API
         {
             services.AddControllers();
 
-            services.AddAddSwaggerServices();
+            services.AddSwaggerServices();
+            services.AddMapsterConfig();
 
 			services.AddAuthConfig(configuration);
 
@@ -25,6 +27,7 @@ namespace Plant_Project.API
 
 			services.AddScoped<IAuthServices, AuthServices>();
 			services.AddScoped<IEmailSender, EmailService>();
+			services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddValidationConfig();
@@ -35,7 +38,7 @@ namespace Plant_Project.API
 
 			return services; 
         }
-        public static IServiceCollection AddAddSwaggerServices(this IServiceCollection services){
+        public static IServiceCollection AddSwaggerServices(this IServiceCollection services){
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             return services;
@@ -43,8 +46,6 @@ namespace Plant_Project.API
         //sdcnsdnc 
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-
             services.AddIdentity<ApplicationUser,ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
@@ -94,6 +95,15 @@ namespace Plant_Project.API
                AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             return services;
         }
+		private static IServiceCollection AddMapsterConfig(this IServiceCollection services)
+		{
+			var mappingConfig = TypeAdapterConfig.GlobalSettings;
+			mappingConfig.Scan(Assembly.GetExecutingAssembly());
+
+			services.AddSingleton<IMapper>(new Mapper(mappingConfig));
+
+			return services;
+		}
 		private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services,
 		IConfiguration configuration)
 		{

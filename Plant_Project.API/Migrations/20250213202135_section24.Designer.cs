@@ -12,8 +12,8 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250211200229_useRoles")]
-    partial class useRoles
+    [Migration("20250213202135_section24")]
+    partial class section24
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -315,6 +315,9 @@ namespace Plant_Project.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -374,11 +377,12 @@ namespace Plant_Project.API.Migrations
                             Email = "admin@PlantOpia.com",
                             EmailConfirmed = true,
                             FirstName = "PlantOpia",
+                            IsDisabled = false,
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANTOPIA.COM",
                             NormalizedUserName = "ADMIN@PLANTOPIA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELSRDzgYspQWkMLd8NBJ1IDblvpvb5y/knsAIAabYCWSySAq8iJc7nV5mzFXjd60wA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOuwOyyx5D1wS+T5O7cr/jbdTeRnkxc8D5nxIZCImbqScS1j832yPXruTYv32OAz+g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,

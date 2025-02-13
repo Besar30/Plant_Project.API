@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Plant_Project.API.Migrations
 {
     /// <inheritdoc />
-    public partial class useRoles : Migration
+    public partial class section24 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,6 +36,7 @@ namespace Plant_Project.API.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsDisabled = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -196,8 +197,8 @@ namespace Plant_Project.API.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "6dc6528a-b280-4770-9eae-82671ee81ef7", 0, "99d2bbc6-bc54-4248-a172-a77de3ae4430", "admin@PlantOpia.com", true, "PlantOpia", "Admin", false, null, "ADMIN@PLANTOPIA.COM", "ADMIN@PLANTOPIA.COM", "AQAAAAIAAYagAAAAELSRDzgYspQWkMLd8NBJ1IDblvpvb5y/knsAIAabYCWSySAq8iJc7nV5mzFXjd60wA==", null, false, "55BF92C9EF0249CDA210D85D1A851BC9", false, "admin@PlantOpia.com" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "IsDisabled", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "6dc6528a-b280-4770-9eae-82671ee81ef7", 0, "99d2bbc6-bc54-4248-a172-a77de3ae4430", "admin@PlantOpia.com", true, "PlantOpia", false, "Admin", false, null, "ADMIN@PLANTOPIA.COM", "ADMIN@PLANTOPIA.COM", "AQAAAAIAAYagAAAAEOuwOyyx5D1wS+T5O7cr/jbdTeRnkxc8D5nxIZCImbqScS1j832yPXruTYv32OAz+g==", null, false, "55BF92C9EF0249CDA210D85D1A851BC9", false, "admin@PlantOpia.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",

@@ -14,7 +14,6 @@ global using System.Reflection;
 global using Mapster;
 global using System.Security.Cryptography;
 global using Hangfire;
-global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Identity.UI.Services;
 global using Microsoft.AspNetCore.WebUtilities;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,8 +22,8 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 
-
-
+global using Plant_Project.API.Authentication.Filters;
+global using Plant_Project.API.Contracts.Roles;
 global using Plant_Project.API.contracts.Authentication;
 global using Plant_Project.API.Errors;
 global using Plant_Project.API.Helpers;
@@ -36,4 +35,5 @@ global using Plant_Project.API.Services;
 global using Plant_Project.API.Extensions;
 global using Plant_Project.API.Abstraction;
 global using Plant_Project.API.Abstractions.Consts;
-
+global using Plant_Project.API.Contracts.Users;
+global using Plant_Project.API.Abstraction.Const.Pattern;
