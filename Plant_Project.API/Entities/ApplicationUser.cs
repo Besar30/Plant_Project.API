@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
 
 namespace Plant_Project.API.Entities
 {

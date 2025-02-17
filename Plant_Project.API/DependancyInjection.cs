@@ -2,7 +2,6 @@
 using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Plant_Project.API.Authentication;
 using Plant_Project.API.contracts.Users;
@@ -21,6 +20,7 @@ namespace Plant_Project.API
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<ICategoryServices, CategoryServices>();
             services.AddAuthConfig(configuration);
             var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();
@@ -36,7 +36,9 @@ namespace Plant_Project.API
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-            services.AddIdentity<ApplicationUser,IdentityRole>()
+
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();

@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="persistence\Migrations\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
 </Project>
