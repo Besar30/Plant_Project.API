@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250217225713_PlantsAndCategoryTables")]
+    partial class PlantsAndCategoryTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,80 +354,12 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANTOPIA.COM",
                             NormalizedUserName = "ADMIN@PLANTOPIA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFJUX+yXqLuFR1R1Nvna89uDMNb3xLOWSu/AKs195FtJ51vyESpB3cAanNUJ2JhP2A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED+pQgW6UXaxvKw8sAH65PQzB1zbj4H304xIBc4amH6XXNJD09jwd3Y3I75KycUv/g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
                             UserName = "admin@PlantOpia.com"
                         });
-                });
-
-            modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("categories");
-                });
-
-            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("How_To_Plant")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Is_Avilable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("PurchseCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Plants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -513,22 +448,6 @@ namespace Plant_Project.API.Migrations
                         });
 
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
-                {
-                    b.HasOne("Plant_Project.API.Entities.Category", "Category")
-                        .WithMany("Plants")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
-                {
-                    b.Navigation("Plants");
                 });
 #pragma warning restore 612, 618
         }

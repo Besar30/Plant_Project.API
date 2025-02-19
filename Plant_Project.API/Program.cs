@@ -1,5 +1,5 @@
 ﻿
-using Plant_Project.API;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,5 +34,10 @@ app.UseHangfireDashboard("/jobs", new DashboardOptions
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+	ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.Run();

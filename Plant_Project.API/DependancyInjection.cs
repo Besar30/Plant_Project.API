@@ -26,6 +26,7 @@ namespace Plant_Project.API
 			services.AddBackgroundJobsConfig(configuration);
 
 			services.AddScoped<IAuthServices, AuthServices>();
+			services.AddScoped<IPlantServices, PlantServices>();
 			services.AddScoped<IEmailSender, EmailService>();
 			services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
@@ -35,6 +36,10 @@ namespace Plant_Project.API
 			services.AddHttpContextAccessor();
 
 			services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+
+            services.AddHealthChecks()
+           .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
+           .AddHangfire(options => { options.MinimumAvailableServers = 1; });
 
 			return services; 
         }

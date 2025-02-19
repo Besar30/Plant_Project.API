@@ -4,15 +4,14 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Plant_Project.API.persistence
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor) 
-            : IdentityDbContext<ApplicationUser,ApplicationRole,string>(options)
+	public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
+			: IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            base.OnModelCreating(modelBuilder);
-        }
+
+
+		public DbSet<Plant> Plants { get; set; }
+		public DbSet<Category> categories { get; set; }
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.ConfigureWarnings(warnings =>
@@ -38,6 +37,11 @@ namespace Plant_Project.API.persistence
 			}
 
 			return base.SaveChangesAsync(cancellationToken);
+		}
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			base.OnModelCreating(modelBuilder);
 		}
 	}
 }
