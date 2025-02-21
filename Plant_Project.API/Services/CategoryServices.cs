@@ -66,6 +66,7 @@ namespace Plant_Project.API.Services
             var plants = await _Context.plants
           .Where(x => x.CategoryId == category.Id)
           .Select(x => new PlantsResponse(
+              x.Id,
               x.Name,
               x.Price,
               x.Description,
@@ -78,7 +79,6 @@ namespace Plant_Project.API.Services
           .ToListAsync(cancellationToken);
             return Result.Success(plants);
         }
-
         public async Task<Result> DeleteCategoryAsync(int categoryId, CancellationToken cancellationToken)
         {
             var result = await _Context.categories.Where(x => x.Id == categoryId).FirstOrDefaultAsync(cancellationToken);

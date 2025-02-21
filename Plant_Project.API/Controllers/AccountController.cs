@@ -14,13 +14,14 @@ namespace Plant_Project.API.Controllers
     public class AccountController(IUserServices userServices) : ControllerBase
     {
         private readonly IUserServices _userServices = userServices;
+        //https://localhost:7286/me
         [HttpGet("")]
         public async Task<IActionResult> Info()
         {
             var result = await _userServices.GetProfileAsync(User.GetUserId()!);
             return Ok(result.Value);
         }
-
+        //https://localhost:7286/me/info
         [HttpPut("info")]
         public async Task<IActionResult> Info([FromBody] UpdateProfileRequest request)
         {
@@ -28,7 +29,7 @@ namespace Plant_Project.API.Controllers
             return NoContent();
         }
 
-
+        //https://localhost:7286/me/change-Password
         [HttpPut("change-Password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {

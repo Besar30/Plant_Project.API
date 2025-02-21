@@ -15,7 +15,7 @@ namespace Plant_Project.API.Controllers
         private readonly JwtOptions _Jwtoptions = Jwtoptions.Value;
 
 
-
+        //https://localhost:7286/Auth
         [HttpPost("")]
         public async Task<IActionResult> LoginAcync(LoginRequestDTO Request, CancellationToken cancellationToken)
         {
@@ -23,7 +23,7 @@ namespace Plant_Project.API.Controllers
 
             return result.IsSuccess ? Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
         }
-
+        //https://localhost:7286/Auth/Refresh
 
         [HttpPost("Refresh")]
         public async Task<IActionResult> RefreshAsync([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ namespace Plant_Project.API.Controllers
 
         }
 
-
+        //https://localhost:7286/Auth/RevokeToken
         [HttpPost("RevokeToken")]
         public async Task<IActionResult> RevokeRefreshAsync([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
@@ -46,6 +46,7 @@ namespace Plant_Project.API.Controllers
                 Ok() :
                 result.ToProblem(StatusCodes.Status400BadRequest);
         }
+        //https://localhost:7286/Auth/Register
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
         {

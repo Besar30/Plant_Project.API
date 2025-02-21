@@ -1,6 +1,7 @@
 ﻿namespace Plant_Project.API.contracts.Plants
 {
     public record PlantsResponse(
+        int Id,
         string Name,
         decimal Price,
         string Description,

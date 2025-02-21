@@ -1,5 +1,8 @@
-﻿using Mapster;
+﻿using Azure.Core;
+using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.contracts.Plants;
+using Plant_Project.API.Entities;
 
 namespace Plant_Project.API.Services
 {
@@ -11,6 +14,7 @@ namespace Plant_Project.API.Services
             var result= await _context.plants.Include(p=>p.Category).ToListAsync(cancellationToken);
 
             var response = result.Select(p => new PlantsResponse(
+                   p.Id,
                   p.Name,
                   p.Price,
                   p.Description,
@@ -48,7 +52,89 @@ namespace Plant_Project.API.Services
             return Result.Success();
         }
 
-     
+        
+        public async Task<Result> UpdatePlantAsync(int Id,PlantsRequest request, CancellationToken cancellationToken = default)
+        {
+            var Plant = await _context.plants.Include(x=>x.Category).Where(x => x.Id == Id).FirstOrDefaultAsync(cancellationToken);
+
+            if (Plant == null)
+                return Result.Failure(PlantErrors.PlantNotFound);
+            var CategoryIsExist = await _context.categories.FindAsync(request.CategoryId, cancellationToken);
+            if (CategoryIsExist == null)
+            {
+
+                return Result.Failure(CategoryError.CategoryNotFound);
+            }
+            // تحديث الصورة إذا تم رفع صورة جديدة
+            if (request.ImagePath != null)
+            {
+                // إذا كانت الصورة الجديدة مختلفة عن القديمة
+                if (!Plant.ImagePath.Equals(request.ImagePath.FileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    // مسح الصورة القديمة
+                    DeleteImage(Plant.ImagePath);
+
+                    // حفظ الصورة الجديدة
+                    string newImagePath = await SaveImageAsync(request.ImagePath);
+                    Plant.ImagePath = newImagePath;
+                }
+            }
+            Plant.Name = request.Name;
+            Plant.Description = request.Description;
+            Plant.Price = request.Price;
+            Plant.How_To_Plant = request.How_To_Plant;
+            Plant.Quantity = request.Quantity;
+            Plant.CategoryId = request.CategoryId;
+            await _context.SaveChangesAsync(cancellationToken);
+            return Result.Success();
+        }
+        public async Task<Result<PlantsResponse>> GetByIdAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            var plant= await _context.plants.Where(x=>x.Id==Id).FirstOrDefaultAsync(cancellationToken);
+            if(plant == null)
+                return Result.Failure<PlantsResponse>(PlantErrors.PlantNotFound);
+            
+            var category= await _context.categories.Where(x=>x.Id==plant.CategoryId).FirstOrDefaultAsync(cancellationToken);
+            
+            
+            var plantResponse = new PlantsResponse(
+                   plant.Id,
+                   plant.Name,
+                    plant.Price,
+                   plant.Description,
+                     plant.How_To_Plant,
+               plant.Quantity,
+               plant.ImagePath,
+               plant.Is_Avilable,
+               category!.Name
+       );
+
+            return Result.Success(plantResponse);
+        }
+        public async Task<Result<PlantsResponse>> GetByNameAsync(string Name, CancellationToken cancellationToken = default)
+        {
+            var plant= await _context.plants.Where(x=>x.Name==Name).FirstOrDefaultAsync(cancellationToken);
+            if (plant == null)
+                return Result.Failure<PlantsResponse>(PlantErrors.PlantNotFound);
+
+            var category = await _context.categories.Where(x => x.Id == plant.CategoryId).FirstOrDefaultAsync(cancellationToken);
+
+
+            var plantResponse = new PlantsResponse(
+                   plant.Id,
+                   plant.Name,
+                    plant.Price,
+                   plant.Description,
+                     plant.How_To_Plant,
+               plant.Quantity,
+               plant.ImagePath,
+               plant.Is_Avilable,
+               category!.Name
+       );
+
+            return Result.Success(plantResponse);
+        }
+
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
@@ -65,5 +151,16 @@ namespace Plant_Project.API.Services
 
             return "/images/" + uniqueFileName;
         }
+        private void DeleteImage(string imagePath)
+{
+    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath.TrimStart('/'));
+
+    if (File.Exists(fullPath))
+    {
+        File.Delete(fullPath);
+    }
+}
+
+       
     }
 }
