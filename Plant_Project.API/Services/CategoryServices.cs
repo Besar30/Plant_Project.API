@@ -46,7 +46,7 @@ namespace Plant_Project.API.Services
             if (category == null) {
                 return Result.Failure(CategoryError.CategoryNotFound);
             }
-            var result = await _Context.categories.AnyAsync(x => x.Name == request.Name, cancellationToken);
+            var result = await _Context.categories.AnyAsync(x => x.Name == request.Name && x.Id!=categoryId, cancellationToken);
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
             category.Description = request.Description;

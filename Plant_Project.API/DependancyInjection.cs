@@ -21,6 +21,7 @@ namespace Plant_Project.API
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<ICategoryServices, CategoryServices>();
+            services.AddScoped<IplantServices,plantServices>();
             services.AddAuthConfig(configuration);
             var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();
