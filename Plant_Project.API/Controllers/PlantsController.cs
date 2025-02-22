@@ -1,8 +1,4 @@
-﻿
-
-using Plant_Project.API.Contracts.Roles;
-
-namespace Plant_Project.API.Controllers
+﻿namespace Plant_Project.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -47,7 +43,7 @@ namespace Plant_Project.API.Controllers
 		}
 		[HttpPut("{id}/is_available")]
 		[HasPermission(Permissions.UpdatePlant)]
-		public async Task<IActionResult> TogglePublish([FromRoute] int id, CancellationToken cancellationToken)
+		public async Task<IActionResult> ToggleAvailable([FromRoute] int id, CancellationToken cancellationToken)
 		{
 			var result = await _plantServices.IsAvailableAsync(id, cancellationToken);
 

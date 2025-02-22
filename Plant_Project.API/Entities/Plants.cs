@@ -15,7 +15,7 @@
 
 		public int Quantity { get; set; }
 
-		public bool Is_Avilable { get; set; } = true;
+		public bool Is_Available { get; set; } = true;
 
 		public string ImagePath { get; set; } = string.Empty;
 

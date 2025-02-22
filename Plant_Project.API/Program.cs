@@ -31,6 +31,8 @@ app.UseHangfireDashboard("/jobs", new DashboardOptions
 	//IsReadOnlyFunc = (DashboardContext conext) => true
 });
 
+app.UseStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
