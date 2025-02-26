@@ -16,5 +16,16 @@ namespace Plant_Project.API.Errors
             new("User.Email Duplicated", "This Email is already Used");
         public static readonly Error PasswordNotComfirmed =
             new("User.Password Not Comfirmed", "password not comfirmed");
+
+
+        public static readonly Error EmailNotComfirmed =
+           new("User.EmailNotComfirmed", "Email Not Comfirmed");
+
+        public static readonly Error InvalidCode =
+          new("User.InvalidCode", "Invalid Code");
+
+        public static readonly Error DuplicatedConfirmation =
+        new("User.DuplicatedConfirmation", "Email already confirmed");
     }
 }
+

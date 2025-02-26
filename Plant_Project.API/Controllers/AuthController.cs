@@ -21,7 +21,9 @@ namespace Plant_Project.API.Controllers
         {
             var result = await _authServices.GetTokenaync(Request.Email, Request.Password, cancellationToken);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
+            if (result.IsSuccess) return Ok(result);
+            else if (result.error == UeserError.EmailNotComfirmed) return result.ToProblem(StatusCodes.Status401Unauthorized);
+            else return result.ToProblem(StatusCodes.Status404NotFound);
         }
         //https://localhost:7286/Auth/Refresh
 
@@ -51,7 +53,21 @@ namespace Plant_Project.API.Controllers
         public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
         {
             var result = await _authServices.RegisterAsync(Request, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblem(StatusCodes.Status400BadRequest);
+            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+        }
+
+        [HttpPost("Confirm-Email")]
+        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ComfirmEamilRequest Request)
+        {
+            var result = await _authServices.ConfirmEamilAsync(Request);
+            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+        }
+
+        [HttpPost("Resend-Confirm-Email")]
+        public async Task<IActionResult> ResendConfirmEmailAsync([FromBody] ResendConfirmationEmailRequest Request)
+        {
+            var result = await _authServices.ResendConfirmEamilAsync(Request);
+            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
         }
     }
 }

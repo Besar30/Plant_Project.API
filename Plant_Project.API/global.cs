@@ -2,8 +2,17 @@
 global using Plant_Project.API.persistence;
 global using Plant_Project.API.Entities;
 global using Microsoft.AspNetCore.Identity;
-global using Plant_Project.API.Abstraction.Consts;
 global using Plant_Project.API.Abstraction;
 global using Plant_Project.API.Errors;
-
-
+global using Microsoft.AspNetCore.Identity.UI.Services;
+global using FluentValidation;
+global using FluentValidation.AspNetCore;
+global using Mapster;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.IdentityModel.Tokens;
+global using Plant_Project.API.Authentication;
+global using Plant_Project.API.contracts.Users;
+global using Plant_Project.API.Services;
+global using Plant_Project.API.Settings;
+global using System.Reflection;
+global using System.Text;

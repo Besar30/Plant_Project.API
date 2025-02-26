@@ -1,0 +1,18 @@
+﻿namespace Plant_Project.API.Helpers
+{
+    public static class EmailBodyBuilder
+    {
+        public static string GenerateEmailBody(string template, Dictionary<string, string> templateModel)
+        {
+            var templatePath = $"{Directory.GetCurrentDirectory()}/Templets/{template}.html";
+            var streamReader = new StreamReader(templatePath);
+            var body = streamReader.ReadToEnd();
+            streamReader.Close();
+
+            foreach (var item in templateModel)
+                body = body.Replace(item.Key, item.Value);
+
+            return body;
+        }
+    }
+}
