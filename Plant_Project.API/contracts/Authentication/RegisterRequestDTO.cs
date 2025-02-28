@@ -6,5 +6,4 @@
          string Password,
          string ComfirmPassword
         );
- 
 }

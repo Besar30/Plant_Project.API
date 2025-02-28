@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
-
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Mail;
 using Plant_Project.API.contracts.Authentication;
 using Plant_Project.API.Helpers;
 using System.Security.Cryptography;
-using System.Text;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace Plant_Project.API.Services
 {
@@ -93,7 +90,7 @@ namespace Plant_Project.API.Services
             return Result.Success();
         }
 
-        public async Task<Result> RegisterAsync(RegisterRequestDTO Request, CancellationToken cancellationToken = default)
+        public async Task<Result<AuthRespons>> RegisterAsync(RegisterRequestDTO Request, CancellationToken cancellationToken = default)
         {
 
             var EmailIsExist=await _userManager.Users.AnyAsync(x=>x.Email== Request.Email,cancellationToken);
@@ -113,24 +110,32 @@ namespace Plant_Project.API.Services
              var result=await _userManager.CreateAsync(user,Request.Password);
             if (result.Succeeded)
             {
-                //var (token, expiresIn) = _jwtProvider.GenerateToken(user);
-                //var refreshToken = GenerateRefreshToken();
-                //var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
-                //user.RefreshTokens.Add(new RefreshToken
-                //{
-                //    Token = refreshToken,
-                //    ExpiresOn = refreshTokenEXpirationDays
-                //});
-                //await _userManager.UpdateAsync(user);
-                ////return authrespons
-                //var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
-                //return Result.Success<AuthRespons>(resultt);
-                var code= await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                _logger.LogInformation("Comfirmation Code :{code}",code);
-                //TODO:send email
-                await SendConfirmation(user,code);
-                return Result.Success();
+                var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+                var refreshToken = GenerateRefreshToken();
+                var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
+                user.RefreshTokens.Add(new RefreshToken
+                {
+                    Token = refreshToken,
+                    ExpiresOn = refreshTokenEXpirationDays
+                });
+                await _userManager.UpdateAsync(user);
+                //return authrespons
+                var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
+                return Result.Success<AuthRespons>(resultt);
+                //var code= await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                ////var param = new Dictionary<string, string?>
+                ////{
+                ////    {"code",code },
+                ////    {"email",user.Email }
+                ////};
+                ////var callback=QueryHelpers.AddQueryString(MailSettings.ClientUri!, param);
+                ////await _emailSender.SendEmailAsync(user.Email, "Email confirmation Token", callback);
+
+                //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                //_logger.LogInformation("Comfirmation Code :{code}",code);
+                //////TODO:send email
+                //await SendConfirmation(user,code);
+                //return Result.Success();
             }
             //badRequest
             var error = result.Errors.First();
