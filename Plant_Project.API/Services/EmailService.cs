@@ -1,34 +1,50 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.Extensions.Options;
 using MimeKit;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
+using System;
+using System.Threading.Tasks;
 
-namespace Plant_Project.API.Services
+public class EmailService : IEmailSender
 {
-    public class EmailService(IOptions<MailSettings> mailSettings, ILogger<EmailService> logger) : IEmailSender
-    {
-        private readonly MailSettings _mailSettings = mailSettings.Value;
-        private readonly ILogger<EmailService> _logger = logger;
+    private readonly MailSettings _mailSettings;
 
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+    public EmailService(IOptions<MailSettings> mailSettings)
+    {
+        _mailSettings = mailSettings.Value;
+    }
+
+    public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+    {
+        try
         {
             var message = new MimeMessage
             {
                 Sender = MailboxAddress.Parse(_mailSettings.Mail),
                 Subject = subject
             };
+
+            message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
             message.To.Add(MailboxAddress.Parse(email));
-            var builder = new BodyBuilder
-            {
-                HtmlBody = htmlMessage
-            };
+
+            var builder = new BodyBuilder { HtmlBody = htmlMessage };
             message.Body = builder.ToMessageBody();
+
             using var smtp = new SmtpClient();
-            _logger.LogInformation("Sending email to {email}", email);
-            smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendAsync(message);
-            smtp.Disconnect(true);
+            await smtp.DisconnectAsync(true);
+
+            Console.WriteLine("✅ البريد الإلكتروني تم إرساله بنجاح إلى: " + email);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("❌ خطأ أثناء إرسال البريد: " + ex.Message);
+            throw;
         }
     }
 }

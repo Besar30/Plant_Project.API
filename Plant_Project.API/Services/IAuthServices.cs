@@ -7,7 +7,10 @@ namespace Plant_Project.API.Services
         Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default);
         Task<Result> RevokeRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default);
         Task<Result<AuthRespons>> RegisterAsync(RegisterRequestDTO RegisterReq, CancellationToken cancellationToken = default);
-        Task<Result> ConfirmEamilAsync(ComfirmEamilRequest Request);
-        Task<Result> ResendConfirmEamilAsync(ResendConfirmationEmailRequest Request);
+        //Task<Result> ConfirmEamilAsync(ComfirmEamilRequest Request);
+        //Task<Result> ResendConfirmEamilAsync(ResendConfirmationEmailRequest Request);
+        Task<Result<string>> ForgetPassword(ForgotPasswordDto forgotPassword);
+        Task<Result> ResetPassword(ResetPasswordDto resetPasswordD);
+
     }
 }

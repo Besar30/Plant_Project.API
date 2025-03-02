@@ -56,18 +56,37 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
         }
 
-        [HttpPost("Confirm-Email")]
-        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ComfirmEamilRequest Request)
-        {
-            var result = await _authServices.ConfirmEamilAsync(Request);
-            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
-        }
+        //[HttpPost("Confirm-Email")]
+        //public async Task<IActionResult> ConfirmEmailAsync([FromBody] ComfirmEamilRequest Request)
+        //{
+        //    var result = await _authServices.ConfirmEamilAsync(Request);
+        //    return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+        //}
 
-        [HttpPost("Resend-Confirm-Email")]
-        public async Task<IActionResult> ResendConfirmEmailAsync([FromBody] ResendConfirmationEmailRequest Request)
+        //[HttpPost("Resend-Confirm-Email")]
+        //public async Task<IActionResult> ResendConfirmEmailAsync([FromBody] ResendConfirmationEmailRequest Request)
+        //{
+        //    var result = await _authServices.ResendConfirmEamilAsync(Request);
+        //    return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+        //}
+
+        [HttpPost("forgetpassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody]ForgotPasswordDto forgotPassword)
         {
-            var result = await _authServices.ResendConfirmEamilAsync(Request);
-            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+            if (!ModelState.IsValid)
+                return BadRequest();
+            var result = await _authServices.ForgetPassword(forgotPassword);
+            return result.IsSuccess ?
+                Ok(result.Value) : result.ToProblem(StatusCodes.Status400BadRequest);
+        }
+        [HttpPost("resstpassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto ResetPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+            var result= await _authServices.ResetPassword(ResetPassword);
+            return result.IsSuccess?
+                Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
         }
     }
 }

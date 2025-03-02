@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Plant_Project.API.contracts.Authentication;
 using Plant_Project.API.Helpers;
 using System.Security.Cryptography;
+using MailKit.Security;
 
 namespace Plant_Project.API.Services
 {
@@ -143,48 +144,81 @@ namespace Plant_Project.API.Services
                 
         }
 
-        public async Task<Result> ConfirmEamilAsync(ComfirmEamilRequest Request)
+        //public async Task<Result> ConfirmEamilAsync(ComfirmEamilRequest Request)
+        //{
+        //    if(await _userManager.FindByIdAsync(Request.UserId) is not { } user)
+        //        return Result.Failure(UeserError.InvalidCode);
+        //    if (user.EmailConfirmed)
+        //        return Result.Failure(UeserError.DuplicatedConfirmation);
+        //    var code = Request.Code;
+        //    try
+        //    {
+        //        code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+        //    }
+        //    catch(FormatException)
+        //    {
+        //        return Result.Failure(UeserError.InvalidCode);
+
+        //    }
+
+        //    var result = await _userManager.ConfirmEmailAsync(user,code);
+        //    if (result.Succeeded)
+        //    {
+        //        return Result.Success();
+        //    }
+        //    //badRequest
+        //    var error = result.Errors.First();
+        //    return Result.Failure(new Error(error.Code, error.Description));
+
+        //}
+        //public async Task<Result> ResendConfirmEamilAsync(ResendConfirmationEmailRequest Request)
+        //{
+        //    if (await _userManager.FindByEmailAsync(Request.Email) is not { } user)
+        //        return Result.Success();
+        //    if(user.EmailConfirmed)
+        //        return Result.Failure(UeserError.DuplicatedConfirmation);
+
+
+        //    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        //    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        //    _logger.LogInformation("Comfirmation Code :{code}", code);
+
+        //    //TODO: send Email
+        //    await SendConfirmation(user, code);
+
+        //    return Result.Success();
+        //}
+        public async Task<Result<string>> ForgetPassword(ForgotPasswordDto forgotPassword)
         {
-            if(await _userManager.FindByIdAsync(Request.UserId) is not { } user)
-                return Result.Failure(UeserError.InvalidCode);
-            if (user.EmailConfirmed)
-                return Result.Failure(UeserError.DuplicatedConfirmation);
-            var code = Request.Code;
-            try
-            {
-                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+         
+            var user= await _userManager.FindByEmailAsync(forgotPassword.Email);
+            if (user == null) {
+                return Result.Failure<string>(UeserError.EmailNotFound);
             }
-            catch(FormatException)
+            var token= await _userManager.GeneratePasswordResetTokenAsync(user);
+            var param = new Dictionary<string, string>
             {
-                return Result.Failure(UeserError.InvalidCode);
-
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user,code);
-            if (result.Succeeded)
-            {
-                return Result.Success();
-            }
-            //badRequest
-            var error = result.Errors.First();
-            return Result.Failure(new Error(error.Code, error.Description));
+                {"token",token },
+                {"email",forgotPassword.Email}
+            };
+            var callback=QueryHelpers.AddQueryString(forgotPassword.ClientUri, param);
+           // var message = new Message([user.Email!], "Reset password token", callback, null);
+            await _emailSender.SendEmailAsync(user.Email!, "Reset password token", callback);
+            return Result.Success(token);
 
         }
-        public async Task<Result> ResendConfirmEamilAsync(ResendConfirmationEmailRequest Request)
+        public async Task<Result> ResetPassword(ResetPasswordDto resetPassword)
         {
-            if (await _userManager.FindByEmailAsync(Request.Email) is not { } user)
-                return Result.Success();
-            if(user.EmailConfirmed)
-                return Result.Failure(UeserError.DuplicatedConfirmation);
-
-
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            _logger.LogInformation("Comfirmation Code :{code}", code);
-
-            //TODO: send Email
-            await SendConfirmation(user, code);
-
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+            if (user == null) {
+                return Result.Failure(UeserError.EmailNotFound);
+            }
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token!, resetPassword.Password!);
+            if (!result.Succeeded)
+            {
+                var error = result.Errors.First();
+                return Result.Failure(new Error(error.Code, error.Description));
+            }
             return Result.Success();
         }
 
@@ -208,5 +242,7 @@ namespace Plant_Project.API.Services
                 );
             await _emailSender.SendEmailAsync(user.Email!, "Plant project : Email comfirmation", emailBody);
         }
+
+        
     }
 }

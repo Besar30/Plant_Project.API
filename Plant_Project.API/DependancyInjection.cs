@@ -68,6 +68,9 @@ namespace Plant_Project.API
                 //options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
             });
+            services.Configure<DataProtectionTokenProviderOptions>(options => {
+                options.TokenLifespan = TimeSpan.FromHours(2);
+            });
             return services;
         }
         public static IServiceCollection AddValidationConfig(this IServiceCollection services)
