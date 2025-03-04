@@ -12,6 +12,7 @@ public class Order
 
 	public DateTime OrderDate { get; set; } = DateTime.UtcNow; // Order timestamp
 
+	public string? Address { get; set; }
 	public string PaymentMethod { get; set; } = string.Empty; // Example: "Credit Card", "PayPal"
 
 	public string PaymentStatus { get; set; } = "Pending"; // Possible values: Pending, Paid, Failed

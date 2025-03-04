@@ -14,6 +14,7 @@ namespace Plant_Project.API.Entities
 		public bool IsDisabled { get; set; }
         public ICollection<Cart>? Carts { get; set; }
         public ICollection<Order>? Orders { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
 		public List<RefreshToken> RefreshTokens { get; set; } = [];
     }
 }

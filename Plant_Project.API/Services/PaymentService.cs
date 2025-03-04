@@ -1,4 +1,6 @@
-﻿namespace Plant_Project.API.Services;
+﻿using Plant_Project.API.contracts.Payment;
+
+namespace Plant_Project.API.Services;
 
 public class PaymentService(UserManager<ApplicationUser> userManager,
 	ApplicationDbContext context,
@@ -9,7 +11,7 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 	private readonly PayAuthService _payAuthService = payAuthService;
 	private readonly UserManager<ApplicationUser> _userManager = userManager;
 
-	public async Task<Result> CheckoutAsync(CheckoutRequest request, PaymentCardDetails? cardDetails, CancellationToken cancellationToken)
+	public async Task<Result> CheckoutAsync(CheckoutRequest request, CancellationToken cancellationToken)
 	{
 		var cartItems = await _context.Carts
 			.Where(c => c.UserId == request.UserId)
@@ -26,6 +28,7 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 			OrderDate = DateTime.UtcNow,
 			PaymentMethod = request.PaymentMethod,
 			PaymentStatus = request.PaymentMethod == "Cash" ? "Pending" : "Processing",
+			Address = request.Address, // Save user-provided address
 			OrderItems = cartItems.Select(c => new OrderItem
 			{
 				PlantId = c.PlantId,
@@ -38,37 +41,62 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 		_context.Orders.Add(order);
 		await _context.SaveChangesAsync(cancellationToken);
 
-		
 		if (request.PaymentMethod != "Cash")
 		{
-			
-			if (cardDetails == null)
+			// Ensure card details are provided
+			if (request.CardDetails == null)
 				return Result.Failure(PaymentErrors.MissingCardDetails);
 
-			var paymentResult = await ProcessPaymentAsync(order, request.PaymentMethod, cardDetails);
+			// Validate Card Details
+			if (!CheckoutValidator.IsValidCardNumber(request.CardDetails.CardNumber))
+				return Result.Failure(PaymentErrors.InValidCardNumber);
+
+			if (!CheckoutValidator.IsValidExpiryDate(request.CardDetails.ExpirationDate))
+				return Result.Failure(PaymentErrors.InValidExpiryDate);
+
+			if (!CheckoutValidator.IsValidCVV(request.CardDetails.CVV, request.CardDetails.CardType))
+				return Result.Failure(PaymentErrors.InValidCVV);
+
+			// Process Payment
+			var paymentResult = await ProcessPaymentAsync(order, request.PaymentMethod, request.CardDetails!);
 
 			if (!paymentResult.Success)
 				return Result.Failure(PaymentErrors.PaymentFailer);
-
-			order.PaymentStatus = "Paid";
 			order.TransactionId = paymentResult.TransactionId;
+			order.PaymentStatus = "Paid";
+			await _context.SaveChangesAsync(cancellationToken);
+
+
+			// ✅ Save Payment Record
+			var payment = new Payment
+			{
+				UserId = request.UserId,
+				OrderId = order.Id,
+				Amount = order.TotalAmount,
+				Currency = "USD", // Default currency
+				PaymentIntentId = order.TransactionId ?? string.Empty,
+				Status = "Succeeded",
+				CreatedAt = DateTime.UtcNow
+			};
+
+			_context.Payments.Add(payment);
+
 			await _context.SaveChangesAsync(cancellationToken);
 		}
-
-		
 		_context.Carts.RemoveRange(cartItems);
+
 		await _context.SaveChangesAsync(cancellationToken);
 
 		return Result.Success();
 	}
 
+
 	private async Task<PaymentResult> ProcessPaymentAsync(Order order, string paymentMethod, PaymentCardDetails cardDetails)
 	{
+		bool isVisa = cardDetails.CardNumber.StartsWith("4");
+
 		if (paymentMethod == "CreditCard" || paymentMethod == "Visa")
 		{
-			
-			bool isVisa = cardDetails.CardNumber.StartsWith("4");
-
 			var paymentResult = await _payAuthService.ProcessPaymentAsync(
 				order.TotalAmount,
 				cardDetails.CardNumber,
@@ -76,7 +104,6 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 				cardDetails.CVV
 			);
 
-			// If the method was explicitly Visa but the card isn't Visa, return an error
 			if (paymentMethod == "Visa" && !isVisa)
 				return new PaymentResult(false, "Invalid Visa card");
 
@@ -85,4 +112,5 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 
 		return new PaymentResult(false, "Invalid payment method");
 	}
+
 }

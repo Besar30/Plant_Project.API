@@ -2,5 +2,5 @@
 
 public interface IPaymentService
 {
-	Task<Result> CheckoutAsync(CheckoutRequest request, PaymentCardDetails? cardDetails, CancellationToken cancellationToken);
+	Task<Result> CheckoutAsync(CheckoutRequest request, CancellationToken cancellationToken);
 }

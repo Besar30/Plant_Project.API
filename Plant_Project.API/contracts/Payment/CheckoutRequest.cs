@@ -3,5 +3,6 @@
 public record CheckoutRequest(
 	string UserId,
 	string PaymentMethod,
+	string Address,
 	PaymentCardDetails? CardDetails
 	);

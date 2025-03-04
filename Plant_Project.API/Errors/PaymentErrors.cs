@@ -6,9 +6,22 @@ public class PaymentErrors
 		new("User.PaymentFailer","Fail transaction method", StatusCodes.Status400BadRequest);
 
 	public static readonly Error MissingCardDetails =
-		
 		new("User.MissingCardDetails", "Missing Card Details", StatusCodes.Status400BadRequest);
+	
 	public static readonly Error PaymentMethodRequaird =
 		new("User.PaymentMethodRequaird", "Payment Method Requaird", StatusCodes.Status400BadRequest);
+	
+	public static readonly Error InValidCardNumber =
+		new("User.IsValidCardNumber", "Invalid card number", StatusCodes.Status400BadRequest);
+
+	public static readonly Error InValidCVV =
+		new("User.IsValidCVV", "Invalid cvv number", StatusCodes.Status400BadRequest);
+
+	public static readonly Error InValidExpiryDate =
+		new("User.IsValidExpiryDate", "Invalid Expiry date", StatusCodes.Status400BadRequest);
+
+
+
+
 
 }

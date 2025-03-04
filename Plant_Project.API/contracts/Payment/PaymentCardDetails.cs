@@ -3,5 +3,6 @@
 public record PaymentCardDetails(
 	string CardNumber,
 	string ExpirationDate,
-	string CVV
+	string CVV,
+	string CardType
 	);
