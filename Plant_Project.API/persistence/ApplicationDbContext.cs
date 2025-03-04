@@ -4,14 +4,20 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Plant_Project.API.persistence
 {
-	public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
+	public class ApplicationDbContext(
+		DbContextOptions<ApplicationDbContext> options
+		, IHttpContextAccessor httpContextAccessor)
 			: IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
 
 		public DbSet<Plant> Plants { get; set; }
-		public DbSet<Category> categories { get; set; }
+		public DbSet<Category> Categories { get; set; }
+		public DbSet<Cart> Carts { get; set; }
+		public DbSet<Order> Orders { get; set; }
+		public DbSet<OrderItem> OrderItems { get; set; }
+		public DbSet<Payment> Payments { get; set; }
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.ConfigureWarnings(warnings =>

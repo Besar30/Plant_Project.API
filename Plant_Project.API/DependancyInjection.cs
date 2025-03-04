@@ -16,7 +16,13 @@ namespace Plant_Project.API
 
 			services.AddAuthConfig(configuration);
 
-			//database
+            //services.AddAuthentication()
+	           //     .AddGoogle(options =>
+	           //     {
+		          //      options.ClientId = configuration["Authentication:Google:ClientId"];
+		          //      options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+	           //     });
+			
 			var ConnectionString = configuration.GetConnectionString("DefaultConnection");
 
 			services.AddDbContext<ApplicationDbContext>(options => 
@@ -27,19 +33,22 @@ namespace Plant_Project.API
 
 			services.AddScoped<IAuthServices, AuthServices>();
 			services.AddScoped<IPlantServices, PlantServices>();
+			services.AddScoped<ICartServices, CartServices>();
+			services.AddScoped<IPaymentService, PaymentService>();
 			services.AddScoped<IEmailSender, EmailService>();
 			services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+			services.AddScoped<PayAuthService>();
 
-            services.AddValidationConfig();
+			services.AddValidationConfig();
 
 			services.AddHttpContextAccessor();
 
 			services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
 
             services.AddHealthChecks()
-           .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
-           .AddHangfire(options => { options.MinimumAvailableServers = 1; });
+                    .AddSqlServer(name: "database", connectionString: configuration.GetConnectionString("DefaultConnection")!)
+                    .AddHangfire(options => { options.MinimumAvailableServers = 1; });
 
 			return services; 
         }

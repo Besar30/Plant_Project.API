@@ -19,7 +19,7 @@ namespace Plant_Project.API.persistence.EntityConfigaration
 			{
 				Id = DefaultUsers.AdminId,
 				FirstName = "PlantOpia",
-				LastName = "Admin",
+				LastName = "Admin", 
 				UserName = DefaultUsers.AdminEmail,
 				NormalizedUserName = DefaultUsers.AdminEmail.ToUpper(),
 				Email = DefaultUsers.AdminEmail,

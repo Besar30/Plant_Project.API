@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
+﻿
+
+using File = System.IO.File;
 
 namespace Plant_Project.API.Services;
 
@@ -54,23 +54,20 @@ public class PlantServices(ApplicationDbContext context,ILogger<PlantServices> l
 		if (currentPlant is null)
 			return Result.Failure(PlantsErrors.PlantNotFound);
 
-		// Delete old image if it exists
 		if (!string.IsNullOrEmpty(currentPlant.ImagePath))
 		{
 			DeleteImage(currentPlant.ImagePath);
 		}
 
-		// Save new image only if it's a valid Base64 string
 		string imagePath = await SaveImageAsync(request.ImageUrl);
 
-		// Update plant properties
 		currentPlant.Name = request.Name;
 		currentPlant.Price = request.Price;
 		currentPlant.Description = request.Description;
-		currentPlant.How_To_Plant = request.How_To_Plant;
+		currentPlant.HowToPlant = request.How_To_Plant;
 		currentPlant.Quantity = request.Quantity;
 		currentPlant.ImagePath = imagePath;
-		currentPlant.Is_Available = request.Is_Available;
+		currentPlant.IsAvailable = request.Is_Available;
 		currentPlant.CategoryId = request.CategoryId;
 
 		await _context.SaveChangesAsync(cancellationToken);
@@ -85,7 +82,7 @@ public class PlantServices(ApplicationDbContext context,ILogger<PlantServices> l
 		if (plant is null)
 			return Result.Failure(PlantsErrors.PlantNotFound);
 
-		plant.Is_Available = !plant.Is_Available;
+		plant.IsAvailable = !plant.IsAvailable;
 
 		await _context.SaveChangesAsync(cancellationToken);
 
@@ -104,7 +101,7 @@ public class PlantServices(ApplicationDbContext context,ILogger<PlantServices> l
 			Directory.CreateDirectory(uploadsFolder);
 		}
 
-		string fileName = $"{Guid.NewGuid()}.jpg";
+		string fileName = $"{Guid.CreateVersion7()}.jpg";
 		string filePath = Path.Combine(uploadsFolder, fileName);
 
 		try

@@ -11,8 +11,8 @@ namespace Plant_Project.API.Errors
 		public static readonly Error DuplicatedPlantTitle =
 			new("User.DuplicatedPlantTitle", "Plant already exist", StatusCodes.Status409Conflict);
 
-		public static readonly Error InvalidRefreshToken =
-			new("User.InvalidRefreshToken", "Invalid refresh token", StatusCodes.Status401Unauthorized);
+		public static readonly Error QuantityShortage =
+			new("User.QuantityShortage", "Plant quantity is not enght for your request", StatusCodes.Status400BadRequest);
 
 		public static readonly Error PlantNotFound =
 			new("User.PlantNotFound", "Plant is not found", StatusCodes.Status404NotFound);

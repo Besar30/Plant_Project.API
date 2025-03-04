@@ -19,14 +19,17 @@ global using Microsoft.AspNetCore.WebUtilities;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using HealthChecks.UI.Client;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+global using System.Text.RegularExpressions;
+global using System.Linq;
+global using Stripe;
+global using AuthorizeNet.Api.Contracts.V1;
+global using AuthorizeNet.Api.Controllers;
 
 
 
 
-
-
-
-
+global using Plant_Project.API.contracts.Payment;
+global using Plant_Project.API.contracts.Cart;
 global using Plant_Project.API;
 global using Plant_Project.API.Authentication.Filters;
 global using Plant_Project.API.Contracts.Roles;
@@ -39,6 +42,7 @@ global using Plant_Project.API.Entities;
 global using Plant_Project.API.Authentication;
 global using Plant_Project.API.Services;
 global using Plant_Project.API.Extensions;
+global using Plant_Project.API.Abstractions;
 global using Plant_Project.API.Abstraction;
 global using Plant_Project.API.Abstractions.Consts;
 global using Plant_Project.API.Contracts.Users;

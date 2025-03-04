@@ -12,15 +12,15 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250213202135_section24")]
-    partial class section24
+    [Migration("20250302233636_AddPaymentTable")]
+    partial class AddPaymentTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -54,99 +54,71 @@ namespace Plant_Project.API.Migrations
                         {
                             Id = 1,
                             ClaimType = "permissions",
-                            ClaimValue = "polls:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "Plant:read",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 2,
                             ClaimType = "permissions",
-                            ClaimValue = "polls:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "Plant:add",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 3,
                             ClaimType = "permissions",
-                            ClaimValue = "polls:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "Plant:update",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 4,
                             ClaimType = "permissions",
-                            ClaimValue = "polls:delete",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "Plant:delete",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 5,
                             ClaimType = "permissions",
-                            ClaimValue = "questions:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "users:read",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 6,
                             ClaimType = "permissions",
-                            ClaimValue = "questions:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "users:add",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 7,
                             ClaimType = "permissions",
-                            ClaimValue = "questions:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "users:update",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 8,
                             ClaimType = "permissions",
-                            ClaimValue = "users:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "roles:read",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 9,
                             ClaimType = "permissions",
-                            ClaimValue = "users:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            ClaimValue = "roles:add",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 10,
                             ClaimType = "permissions",
-                            ClaimValue = "users:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ClaimType = "permissions",
-                            ClaimValue = "roles:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ClaimType = "permissions",
-                            ClaimValue = "roles:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ClaimType = "permissions",
                             ClaimValue = "roles:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ClaimType = "permissions",
-                            ClaimValue = "results:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         });
                 });
 
@@ -214,8 +186,8 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "6dc6528a-b280-4770-9eae-82671ee81ef7",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            UserId = "0195442f-5b32-7163-9117-b7023daacb2d",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         });
                 });
 
@@ -273,8 +245,8 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "92b75286-d8f8-4061-9995-e6e23ccdee94",
-                            ConcurrencyStamp = "f51e5a91-bced-49c2-8b86-c2e170c0846c",
+                            Id = "0195442f-5b32-7334-9a35-d43ff70d3aa9",
+                            ConcurrencyStamp = "0195442f-5b32-761a-b2ee-cfca69434828",
                             IsDefault = false,
                             IsDeleted = false,
                             Name = "Admin",
@@ -282,8 +254,8 @@ namespace Plant_Project.API.Migrations
                         },
                         new
                         {
-                            Id = "9eaa03df-8e4f-4161-85de-0f6e5e30bfd4",
-                            ConcurrencyStamp = "5ee6bc12-5cb0-4304-91e7-6a00744e042a",
+                            Id = "0195442f-5b32-7b00-a097-61b7c3baec76",
+                            ConcurrencyStamp = "0195442f-5b32-7bfc-8b9c-18f34c1d2eea",
                             IsDefault = true,
                             IsDeleted = false,
                             Name = "Member",
@@ -371,9 +343,9 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6dc6528a-b280-4770-9eae-82671ee81ef7",
+                            Id = "0195442f-5b32-7163-9117-b7023daacb2d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "99d2bbc6-bc54-4248-a172-a77de3ae4430",
+                            ConcurrencyStamp = "0195442f-5b32-7594-8754-260776e9cdcc",
                             Email = "admin@PlantOpia.com",
                             EmailConfirmed = true,
                             FirstName = "PlantOpia",
@@ -382,12 +354,237 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANTOPIA.COM",
                             NormalizedUserName = "ADMIN@PLANTOPIA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOuwOyyx5D1wS+T5O7cr/jbdTeRnkxc8D5nxIZCImbqScS1j832yPXruTYv32OAz+g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHjqxfd8Z/ldzJOvQvaZwXhNnkBTGM2+MVQyzT4l6rjSNaDy03puQfwZm5S661aN3Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
                             UserName = "admin@PlantOpia.com"
                         });
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlantId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PlantId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HowToPlant")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PurchaseCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Plants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -476,6 +673,107 @@ namespace Plant_Project.API.Migrations
                         });
 
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Cart", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Plant", "Plant")
+                        .WithMany("Carts")
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Plant");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.OrderItem", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Plant_Project.API.Entities.Plant", "Plant")
+                        .WithMany()
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Plant");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Payment", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Category", "Category")
+                        .WithMany("Plants")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Carts");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
+                {
+                    b.Navigation("Plants");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
+                {
+                    b.Navigation("Carts");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Plant_Project.API.Abstraction
+﻿
+namespace Plant_Project.API.Abstractions
 {
     public class Result
     {

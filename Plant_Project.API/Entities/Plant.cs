@@ -11,19 +11,21 @@
 
 		public string Description { get; set; } = string.Empty;
 
-		public string How_To_Plant { get; set; } = string.Empty;
+		public string HowToPlant { get; set; } = string.Empty;
 
-		public int Quantity { get; set; }
+		public int Quantity { get; set; } = 0;
 
-		public bool Is_Available { get; set; } = true;
+		public bool IsAvailable { get; set; } = true;
 
 		public string ImagePath { get; set; } = string.Empty;
 
 		public int CategoryId { get; set; }
 
 		public Category? Category { get; set; }
+		public ICollection<Cart>? Carts { get; set; }
 
-		public int PurchseCount { get; set; }
+		public int PurchaseCount { get; set; } =0;
 
 	}
 
+ 

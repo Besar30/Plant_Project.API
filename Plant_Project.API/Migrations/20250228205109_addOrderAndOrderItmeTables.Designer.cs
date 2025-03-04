@@ -12,8 +12,8 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250218190545_AddTables")]
-    partial class AddTables
+    [Migration("20250228205109_addOrderAndOrderItmeTables")]
+    partial class addOrderAndOrderItmeTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,70 +55,70 @@ namespace Plant_Project.API.Migrations
                             Id = 1,
                             ClaimType = "permissions",
                             ClaimValue = "Plant:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 2,
                             ClaimType = "permissions",
                             ClaimValue = "Plant:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 3,
                             ClaimType = "permissions",
                             ClaimValue = "Plant:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 4,
                             ClaimType = "permissions",
                             ClaimValue = "Plant:delete",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 5,
                             ClaimType = "permissions",
                             ClaimValue = "users:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 6,
                             ClaimType = "permissions",
                             ClaimValue = "users:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 7,
                             ClaimType = "permissions",
                             ClaimValue = "users:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 8,
                             ClaimType = "permissions",
                             ClaimValue = "roles:read",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 9,
                             ClaimType = "permissions",
                             ClaimValue = "roles:add",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         },
                         new
                         {
                             Id = 10,
                             ClaimType = "permissions",
                             ClaimValue = "roles:update",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         });
                 });
 
@@ -186,8 +186,8 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "6dc6528a-b280-4770-9eae-82671ee81ef7",
-                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                            UserId = "0195442f-5b32-7163-9117-b7023daacb2d",
+                            RoleId = "0195442f-5b32-7334-9a35-d43ff70d3aa9"
                         });
                 });
 
@@ -245,8 +245,8 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "92b75286-d8f8-4061-9995-e6e23ccdee94",
-                            ConcurrencyStamp = "f51e5a91-bced-49c2-8b86-c2e170c0846c",
+                            Id = "0195442f-5b32-7334-9a35-d43ff70d3aa9",
+                            ConcurrencyStamp = "0195442f-5b32-761a-b2ee-cfca69434828",
                             IsDefault = false,
                             IsDeleted = false,
                             Name = "Admin",
@@ -254,8 +254,8 @@ namespace Plant_Project.API.Migrations
                         },
                         new
                         {
-                            Id = "9eaa03df-8e4f-4161-85de-0f6e5e30bfd4",
-                            ConcurrencyStamp = "5ee6bc12-5cb0-4304-91e7-6a00744e042a",
+                            Id = "0195442f-5b32-7b00-a097-61b7c3baec76",
+                            ConcurrencyStamp = "0195442f-5b32-7bfc-8b9c-18f34c1d2eea",
                             IsDefault = true,
                             IsDeleted = false,
                             Name = "Member",
@@ -343,9 +343,9 @@ namespace Plant_Project.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6dc6528a-b280-4770-9eae-82671ee81ef7",
+                            Id = "0195442f-5b32-7163-9117-b7023daacb2d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "99d2bbc6-bc54-4248-a172-a77de3ae4430",
+                            ConcurrencyStamp = "0195442f-5b32-7594-8754-260776e9cdcc",
                             Email = "admin@PlantOpia.com",
                             EmailConfirmed = true,
                             FirstName = "PlantOpia",
@@ -354,12 +354,50 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANTOPIA.COM",
                             NormalizedUserName = "ADMIN@PLANTOPIA.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFJUX+yXqLuFR1R1Nvna89uDMNb3xLOWSu/AKs195FtJ51vyESpB3cAanNUJ2JhP2A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGLmtBX/UfhsumhPsDhvIO5k06I+T+9AmJWOG/jlMZu6XYhJtX4JV56xslZsX4zAvQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
                             UserName = "admin@PlantOpia.com"
                         });
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlantId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
@@ -380,7 +418,70 @@ namespace Plant_Project.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("categories");
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PlantId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
@@ -398,7 +499,7 @@ namespace Plant_Project.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("How_To_Plant")
+                    b.Property<string>("HowToPlant")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -406,7 +507,7 @@ namespace Plant_Project.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Is_Avilable")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -417,7 +518,7 @@ namespace Plant_Project.API.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("PurchseCount")
+                    b.Property<int>("PurchaseCount")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -518,6 +619,53 @@ namespace Plant_Project.API.Migrations
                     b.Navigation("RefreshTokens");
                 });
 
+            modelBuilder.Entity("Plant_Project.API.Entities.Cart", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Plant", "Plant")
+                        .WithMany("Carts")
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Plant");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.OrderItem", b =>
+                {
+                    b.HasOne("Plant_Project.API.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Plant_Project.API.Entities.Plant", "Plant")
+                        .WithMany()
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Plant");
+                });
+
             modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
                 {
                     b.HasOne("Plant_Project.API.Entities.Category", "Category")
@@ -529,9 +677,26 @@ namespace Plant_Project.API.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Plant_Project.API.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("Carts");
+
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("Plant_Project.API.Entities.Category", b =>
                 {
                     b.Navigation("Plants");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Plant_Project.API.Entities.Plant", b =>
+                {
+                    b.Navigation("Carts");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim
 {
 	public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
 	{
-		//Default Data
+		
 		var permissions = Permissions.GetAllPermissions();
 		var adminClaims = new List<IdentityRoleClaim<string>>();
 

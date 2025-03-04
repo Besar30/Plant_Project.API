@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Plant_Project.API.Migrations
 {
     /// <inheritdoc />
-    public partial class section24 : Migration
+    public partial class createData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,6 +55,20 @@ namespace Plant_Project.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,45 +200,98 @@ namespace Plant_Project.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Plants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HowToPlant = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    PurchaseCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Plants_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PlantId = table.Column<int>(type: "int", nullable: false),
+                    PlantName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Carts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Carts_Plants_PlantId",
+                        column: x => x.PlantId,
+                        principalTable: "Plants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "IsDefault", "IsDeleted", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "92b75286-d8f8-4061-9995-e6e23ccdee94", "f51e5a91-bced-49c2-8b86-c2e170c0846c", false, false, "Admin", "ADMIN" },
-                    { "9eaa03df-8e4f-4161-85de-0f6e5e30bfd4", "5ee6bc12-5cb0-4304-91e7-6a00744e042a", true, false, "Member", "MEMBER" }
+                    { "0195442f-5b32-7334-9a35-d43ff70d3aa9", "0195442f-5b32-761a-b2ee-cfca69434828", false, false, "Admin", "ADMIN" },
+                    { "0195442f-5b32-7b00-a097-61b7c3baec76", "0195442f-5b32-7bfc-8b9c-18f34c1d2eea", true, false, "Member", "MEMBER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "IsDisabled", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "6dc6528a-b280-4770-9eae-82671ee81ef7", 0, "99d2bbc6-bc54-4248-a172-a77de3ae4430", "admin@PlantOpia.com", true, "PlantOpia", false, "Admin", false, null, "ADMIN@PLANTOPIA.COM", "ADMIN@PLANTOPIA.COM", "AQAAAAIAAYagAAAAEOuwOyyx5D1wS+T5O7cr/jbdTeRnkxc8D5nxIZCImbqScS1j832yPXruTYv32OAz+g==", null, false, "55BF92C9EF0249CDA210D85D1A851BC9", false, "admin@PlantOpia.com" });
+                values: new object[] { "0195442f-5b32-7163-9117-b7023daacb2d", 0, "0195442f-5b32-7594-8754-260776e9cdcc", "admin@PlantOpia.com", true, "PlantOpia", false, "Admin", false, null, "ADMIN@PLANTOPIA.COM", "ADMIN@PLANTOPIA.COM", "AQAAAAIAAYagAAAAEL6oU8Ys703b+kzkGq+PIE2LAXO2GFIYkYAHJ4GsEvw/A2Xox30My8I7Wj790Q3Q8A==", null, false, "55BF92C9EF0249CDA210D85D1A851BC9", false, "admin@PlantOpia.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
                 values: new object[,]
                 {
-                    { 1, "permissions", "polls:read", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 2, "permissions", "polls:add", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 3, "permissions", "polls:update", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 4, "permissions", "polls:delete", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 5, "permissions", "questions:read", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 6, "permissions", "questions:add", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 7, "permissions", "questions:update", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 8, "permissions", "users:read", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 9, "permissions", "users:add", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 10, "permissions", "users:update", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 11, "permissions", "roles:read", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 12, "permissions", "roles:add", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 13, "permissions", "roles:update", "92b75286-d8f8-4061-9995-e6e23ccdee94" },
-                    { 14, "permissions", "results:read", "92b75286-d8f8-4061-9995-e6e23ccdee94" }
+                    { 1, "permissions", "Plant:read", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 2, "permissions", "Plant:add", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 3, "permissions", "Plant:update", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 4, "permissions", "Plant:delete", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 5, "permissions", "users:read", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 6, "permissions", "users:add", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 7, "permissions", "users:update", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 8, "permissions", "roles:read", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 9, "permissions", "roles:add", "0195442f-5b32-7334-9a35-d43ff70d3aa9" },
+                    { 10, "permissions", "roles:update", "0195442f-5b32-7334-9a35-d43ff70d3aa9" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "92b75286-d8f8-4061-9995-e6e23ccdee94", "6dc6528a-b280-4770-9eae-82671ee81ef7" });
+                values: new object[] { "0195442f-5b32-7334-9a35-d43ff70d3aa9", "0195442f-5b32-7163-9117-b7023daacb2d" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -264,6 +331,21 @@ namespace Plant_Project.API.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Carts_PlantId",
+                table: "Carts",
+                column: "PlantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Carts_UserId",
+                table: "Carts",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plants_CategoryId",
+                table: "Plants",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -285,13 +367,22 @@ namespace Plant_Project.API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Carts");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Plants");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }
