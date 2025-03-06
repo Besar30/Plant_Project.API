@@ -3,7 +3,5 @@
     public record ForgotPasswordDto(
         string Email,
         string ClientUri
-
         );
-    
 }

@@ -134,6 +134,17 @@ namespace Plant_Project.API.Services
 
             return Result.Success(plantResponse);
         }
+        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var plant = await _context.plants.Where(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
+            if (plant == null)
+                return Result.Failure(PlantErrors.PlantNotFound);
+             DeleteImage(plant.ImagePath);
+             _context.plants.Remove(plant);
+            await _context.SaveChangesAsync(cancellationToken);
+            return Result.Success();
+
+        }
 
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {

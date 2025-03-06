@@ -1,4 +1,6 @@
 ﻿
+using Plant_Project.API.Authentication.Filters;
+
 namespace Plant_Project.API
 {
     public static class DependancyInjection
@@ -31,7 +33,8 @@ namespace Plant_Project.API
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
-
+            services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();

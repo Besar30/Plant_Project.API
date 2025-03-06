@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Plant_Project.API.Abstraction;
+using Plant_Project.API.Abstraction.Consts;
 using Plant_Project.API.Authentication;
 using Plant_Project.API.contracts.Authentication;
 using Plant_Project.API.Services;
@@ -38,7 +39,7 @@ namespace Plant_Project.API.Controllers
 
         }
 
-        //https://localhost:7286/Auth/RevokeToken
+        ////https://localhost:7286/Auth/RevokeToken
         [HttpPost("RevokeToken")]
         public async Task<IActionResult> RevokeRefreshAsync([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
@@ -50,10 +51,10 @@ namespace Plant_Project.API.Controllers
         }
         //https://localhost:7286/Auth/Register
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequestDTO Request,CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDTO Request, CancellationToken cancellationToken)
         {
             var result = await _authServices.RegisterAsync(Request, cancellationToken);
-            return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status409Conflict);
+            return result.IsSuccess ? Ok(result) : result.ToProblem(StatusCodes.Status409Conflict);
         }
 
         //[HttpPost("Confirm-Email")]
@@ -88,5 +89,6 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess?
                 Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
         }
+      
     }
 }

@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Plant_Project.API.Abstraction.Consts;
 using Plant_Project.API.contracts.Plants;
 using Plant_Project.API.Services;
 namespace Plant_Project.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class PlantController(IplantServices iplantServices) : ControllerBase
     {
         private readonly IplantServices _iplantServices = iplantServices;
@@ -16,6 +19,7 @@ namespace Plant_Project.API.Controllers
             return Ok(result);
         }
         //https://localhost:7286/api/Plant
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPost("")]
         public async Task<IActionResult> AddPlantAsync([FromForm] PlantsRequest request,CancellationToken cancellationToken)
         {
@@ -26,6 +30,7 @@ namespace Plant_Project.API.Controllers
 
         }
         //https://localhost:7286/api/Plant/1
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdatePlantAsync([FromRoute] int Id, [FromForm]  PlantsRequest request,CancellationToken cancellationToken)
         {
@@ -53,5 +58,15 @@ namespace Plant_Project.API.Controllers
                 Ok(result.Value) :
                 result.ToProblem(StatusCodes.Status404NotFound);
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int Id,CancellationToken cancellationToken)
+        {
+            var result= await _iplantServices.DeleteAsync(Id,cancellationToken);
+            return result.IsSuccess ?
+                Ok() :
+                result.ToProblem(StatusCodes.Status404NotFound);
+        }
+
     }
 }

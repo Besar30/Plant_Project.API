@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.Abstraction;
 using Plant_Project.API.contracts.Categorys;
@@ -8,6 +9,7 @@ namespace Plant_Project.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController(ICategoryServices categoryServices) : ControllerBase
     {
         private readonly ICategoryServices _categoryServices = categoryServices;

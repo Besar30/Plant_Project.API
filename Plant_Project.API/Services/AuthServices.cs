@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using System.Net.Mail;
+using Plant_Project.API.Abstraction.Consts;
 using Plant_Project.API.contracts.Authentication;
 using Plant_Project.API.Helpers;
 using System.Security.Cryptography;
-using MailKit.Security;
-
+using System.Threading;
 namespace Plant_Project.API.Services
 {
     public class AuthServices(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager
-        ,IJwtProvider jwtProvider,ILogger<AuthServices> logger,IEmailSender emailSender,IHttpContextAccessor httpContextAccessor) : IAuthServices
+        ,IJwtProvider jwtProvider,ILogger<AuthServices> logger,IEmailSender emailSender,IHttpContextAccessor httpContextAccessor,ApplicationDbContext context) : IAuthServices
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
@@ -16,9 +15,8 @@ namespace Plant_Project.API.Services
         private readonly ILogger<AuthServices> _logger = logger;
         private readonly IEmailSender _emailSender = emailSender;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly ApplicationDbContext _context = context;
         private readonly int _refreshTokenExpiryDays = 14;
-
-
         public async Task<Result<AuthRespons>>GetTokenaync(string email, string password, CancellationToken cancellationToken = default)
             {
                 //check email correct
@@ -26,18 +24,12 @@ namespace Plant_Project.API.Services
                 if (user == null) {
                     return Result.Failure<AuthRespons>(UeserError.InvalidCerdentials);
                 }
-                // check password correct
-                //var isvalidpassword = await _userManager.CheckPasswordAsync(user, password);
-                //if (isvalidpassword == false)
-                //{
-                //    return Result.Failure<AuthRespons>(UeserError.InvalidCerdentials);
-
-                //}
                 var result= await _signInManager.PasswordSignInAsync(user,password, false,false);
                 if (result.Succeeded)
                 {
+                var (userRoles, userPermissions) = await GetRolesAndPermissions(user, cancellationToken);
                     //generate jwt
-                    var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+                    var (token, expiresIn) = _jwtProvider.GenerateToken(user,userRoles,userPermissions);
                     var refreshToken = GenerateRefreshToken();
                     var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
                     user.RefreshTokens.Add(new RefreshToken
@@ -53,8 +45,6 @@ namespace Plant_Project.API.Services
                 //401
                 return Result.Failure<AuthRespons>(result.IsNotAllowed?UeserError.EmailNotComfirmed:UeserError.InvalidCerdentials);
             }
-
-
         public async Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
         {
             var userId = _jwtProvider.validationToken(Token);
@@ -64,8 +54,9 @@ namespace Plant_Project.API.Services
             var userRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == RefreshToken && x.IsActive);
             if (userRefreshToken == null) return Result.Failure<AuthRespons>(UeserError.InvalidRefreshToken);
             userRefreshToken.RevokedOn = DateTime.UtcNow;
+            var (userRoles, userPermissions) = await GetRolesAndPermissions(user, cancellationToken);
 
-            var (Newtoken, expiresIn) = _jwtProvider.GenerateToken(user);
+            var (Newtoken, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
             var NewrefreshToken = GenerateRefreshToken();
             var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
             user.RefreshTokens.Add(new RefreshToken
@@ -94,24 +85,26 @@ namespace Plant_Project.API.Services
         public async Task<Result<AuthRespons>> RegisterAsync(RegisterRequestDTO Request, CancellationToken cancellationToken = default)
         {
 
-            var EmailIsExist=await _userManager.Users.AnyAsync(x=>x.Email== Request.Email,cancellationToken);
+            var EmailIsExist = await _userManager.Users.AnyAsync(x => x.Email == Request.Email, cancellationToken);
 
             if (EmailIsExist)
                 return Result.Failure<AuthRespons>(UeserError.DuplicateEmail);
 
-            if(Request.Password!=Request.ComfirmPassword)
+            if (Request.Password != Request.ComfirmPassword)
                 return Result.Failure<AuthRespons>(UeserError.PasswordNotComfirmed);
 
             var user = new ApplicationUser
             {
                 Email = Request.Email,
                 UserName = Request.UserName,
-                FirstName=Request.UserName
+                FirstName = Request.UserName
             };
-             var result=await _userManager.CreateAsync(user,Request.Password);
+            var result = await _userManager.CreateAsync(user, Request.Password);
             if (result.Succeeded)
             {
-                var (token, expiresIn) = _jwtProvider.GenerateToken(user);
+                await _userManager.AddToRoleAsync(user, DefaultRoles.Member);
+                var (userRoles, userPermissions) = await GetRolesAndPermissions(user, cancellationToken);
+                var (token, expiresIn) = _jwtProvider.GenerateToken(user,userRoles,userPermissions);
                 var refreshToken = GenerateRefreshToken();
                 var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
                 user.RefreshTokens.Add(new RefreshToken
@@ -119,6 +112,7 @@ namespace Plant_Project.API.Services
                     Token = refreshToken,
                     ExpiresOn = refreshTokenEXpirationDays
                 });
+
                 await _userManager.UpdateAsync(user);
                 //return authrespons
                 var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
@@ -141,9 +135,8 @@ namespace Plant_Project.API.Services
             //badRequest
             var error = result.Errors.First();
             return Result.Failure<AuthRespons>(new Error(error.Code, error.Description));
-                
-        }
 
+        }
         //public async Task<Result> ConfirmEamilAsync(ComfirmEamilRequest Request)
         //{
         //    if(await _userManager.FindByIdAsync(Request.UserId) is not { } user)
@@ -221,7 +214,6 @@ namespace Plant_Project.API.Services
             }
             return Result.Success();
         }
-
         private string GenerateRefreshToken()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -243,6 +235,16 @@ namespace Plant_Project.API.Services
             await _emailSender.SendEmailAsync(user.Email!, "Plant project : Email comfirmation", emailBody);
         }
 
-        
+       private async Task<(IEnumerable<string>roles,IEnumerable<string> permissions)> GetRolesAndPermissions(ApplicationUser user,CancellationToken cancellationToken)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var userPermissions = await _context.Roles.Join(_context.RoleClaims, role => role.Id,
+                claim => claim.RoleId, (role, claim) => new { role, claim }
+                ).Where(x => userRoles.Contains(x.role.Name!))
+                .Select(x => x.claim.ClaimValue!)
+            .Distinct()
+                .ToListAsync(cancellationToken);
+            return (userRoles, userPermissions);
+        }   
     }
 }

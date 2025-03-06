@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Plant_Project.API.Abstraction.Consts;
 
 namespace Plant_Project.API.persistence.EntityConfigaration
 {
@@ -16,21 +17,21 @@ namespace Plant_Project.API.persistence.EntityConfigaration
             var passwordHasher=new PasswordHasher<ApplicationUser>();
 
             //Default data
-            //builder.HasData(
-            //    new ApplicationUser
-            //    {
-            //        Id=DefaultUsers.AdminId,
-            //        FirstName="Plant-Project",
-            //        LastName="Admin",
-            //        UserName=DefaultUsers.AdminEmail,
-            //        NormalizedUserName=DefaultUsers.AdminEmail.ToUpper(),
-            //        Email=DefaultUsers.AdminEmail,
-            //        NormalizedEmail=DefaultUsers.AdminEmail.ToUpper(),
-            //        SecurityStamp=DefaultUsers.AdminSecurityStamp,
-            //        ConcurrencyStamp=DefaultUsers.AdminConcurrencyStamp,
-            //        EmailConfirmed=false,
-            //        PasswordHash=passwordHasher.HashPassword(null!,DefaultUsers.AdminPassword)
-            //    });
+            builder.HasData(
+                new ApplicationUser
+                {
+                    Id = DefaultUsers.AdminId,
+                    FirstName = "Plant-Project",
+                    LastName = "Admin",
+                    UserName = DefaultUsers.AdminUserName,
+                    NormalizedUserName = DefaultUsers.AdminEmail.ToUpper(),
+                    Email = DefaultUsers.AdminEmail,
+                    NormalizedEmail = DefaultUsers.AdminEmail.ToUpper(),
+                    SecurityStamp = DefaultUsers.AdminSecurityStamp,
+                    ConcurrencyStamp = DefaultUsers.AdminConcurrencyStamp,
+                    EmailConfirmed = false,
+                    PasswordHash = passwordHasher.HashPassword(null!, DefaultUsers.AdminPassword)
+                });
         }
     }
 }

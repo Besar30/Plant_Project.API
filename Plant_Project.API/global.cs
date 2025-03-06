@@ -16,3 +16,5 @@ global using Plant_Project.API.Services;
 global using Plant_Project.API.Settings;
 global using System.Reflection;
 global using System.Text;
+global using Microsoft.AspNetCore.Authorization;
+global using Plant_Project.API.Abstraction.Consts;
