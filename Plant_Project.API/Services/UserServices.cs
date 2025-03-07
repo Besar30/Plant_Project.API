@@ -30,7 +30,7 @@ namespace Plant_Project.API.Services
         public async Task<Result> ChangePasswordAsync(string UserId, ChangePasswordRequest request )
         {
             var user= await _userManager.FindByIdAsync(UserId);
-            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user!, request.CurrentPassword, request.NewPassword);
             if (result.Succeeded) { 
                return Result.Success();
             }

@@ -8,6 +8,15 @@ namespace Plant_Project.API
        public static IServiceCollection AddDependecies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
+            var allowedOrigins=configuration.GetSection("AllowedOrigins").Get<string[]>();  
+            services.AddCors(options =>
+                    options.AddDefaultPolicy(builder=>
+                    builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins(allowedOrigins!)
+                    )
+            );
             services.AddAddSwaggerServices();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IEmailSender,EmailService>();
