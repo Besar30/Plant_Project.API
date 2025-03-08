@@ -14,7 +14,7 @@ namespace Plant_Project.API
                     builder
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .WithOrigins(allowedOrigins!)
+                    .AllowAnyOrigin()
                     )
             );
             services.AddAddSwaggerServices();

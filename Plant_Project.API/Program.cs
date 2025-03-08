@@ -6,7 +6,9 @@ builder.Services.AddDependecies(builder.Configuration);
 //database
 var ConnectionString = builder.Configuration.
     GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(ConnectionString));
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

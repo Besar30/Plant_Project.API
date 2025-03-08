@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Plant_Project.API.Abstraction;
-using Plant_Project.API.contracts.Users;
+﻿using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.Extensions;
-using Plant_Project.API.Services;
-
 namespace Plant_Project.API.Controllers
 {
     [Route("me")]
     [ApiController]
-    [Authorize]
+[Authorize]
     public class AccountController(IUserServices userServices) : ControllerBase
     {
         private readonly IUserServices _userServices = userServices;
