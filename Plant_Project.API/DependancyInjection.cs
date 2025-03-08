@@ -8,15 +8,18 @@ namespace Plant_Project.API
        public static IServiceCollection AddDependecies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
-            var allowedOrigins=configuration.GetSection("AllowedOrigins").Get<string[]>();  
+            var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
+
             services.AddCors(options =>
-                    options.AddDefaultPolicy(builder=>
-                    builder
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowAnyOrigin()
-                    )
-            );
+            {
+                options.AddPolicy("AllowSpecificOrigins", builder =>
+                {
+                    builder.WithOrigins(allowedOrigins!) // ✅ Allow only defined origins
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials(); // ✅ Allow credentials like cookies/tokens
+                });
+            });
             services.AddAddSwaggerServices();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IEmailSender,EmailService>();
@@ -45,6 +48,7 @@ namespace Plant_Project.API
 
             services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
             services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();

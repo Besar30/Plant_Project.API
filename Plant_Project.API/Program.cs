@@ -11,13 +11,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServ
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
+app.UseCors("AllowSpecificOrigins");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseAuthentication();
 app.UseAuthorization();
 //app.UseStaticFiles();
 app.MapControllers();

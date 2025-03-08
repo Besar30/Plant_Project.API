@@ -4,6 +4,10 @@ namespace Plant_Project.API.Services
 {
     public interface IRoleServices
     {
-        public Task<IEnumerable<RoleResponse>> GetAllAsync(bool? includeDisable = false); 
+
+        Task<IEnumerable<RoleResponse>> GetAllAsync(bool? includeDisabled = false, CancellationToken cancellationToken = default);
+        Task<Result<RoleDetailResponse>> GetAsync(string id);
+        Task<Result<RoleDetailResponse>> AddAsync(RoleRequest request);
+
     }
 }
