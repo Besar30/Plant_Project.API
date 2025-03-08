@@ -22,10 +22,25 @@ namespace Plant_Project.API.Controllers
         {
             var result = await _authServices.GetTokenaync(Request.Email, Request.Password, cancellationToken);
 
-            if (result.IsSuccess) return Ok(result);
-            else if (result.error == UeserError.EmailNotComfirmed) return result.ToProblem(StatusCodes.Status401Unauthorized);
-            else return result.ToProblem(StatusCodes.Status404NotFound);
+            if (result.IsSuccess)
+            {
+                // حفظ التوكن في الكوكيز
+                Response.Cookies.Append("AuthToken", result.Value.Token, new CookieOptions
+                {
+                    HttpOnly = true, // حماية من الوصول عبر JavaScript (أفضل أمانًا)
+                    Secure = true,   // مطلوب في HTTPS
+                    SameSite = SameSiteMode.Strict, // لمنع هجمات CSRF
+                    Expires = result.Value.ExpirestIn // انتهاء صلاحية الكوكيز مع انتهاء التوكن
+                });
+
+                return Ok(result);
+            }
+            else if (result.error == UeserError.EmailNotComfirmed)
+                return result.ToProblem(StatusCodes.Status401Unauthorized);
+
+            return result.ToProblem(StatusCodes.Status404NotFound);
         }
+
         //https://localhost:7286/Auth/Refresh
 
         [HttpPost("Refresh")]

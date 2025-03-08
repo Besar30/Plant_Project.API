@@ -6,8 +6,8 @@
         string FristName,
         string LastName,
         string Token,
-        int ExpirestIn,
+        DateTimeOffset ExpirestIn,   // هنا نستخدم DateTimeOffset
         string RefreshToken,
         DateTime RefreshTokenExpiration
-        );
+    );
 }

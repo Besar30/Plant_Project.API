@@ -38,12 +38,27 @@ namespace Plant_Project.API.Services
                         ExpiresOn = refreshTokenEXpirationDays
                     });
                     await _userManager.UpdateAsync(user);
-                    //return authrespons
-                    var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
-                    return Result.Success<AuthRespons>(resultt);
-                }
-                //401
-                return Result.Failure<AuthRespons>(result.IsNotAllowed?UeserError.EmailNotComfirmed:UeserError.InvalidCerdentials);
+                //return authrespons
+                // تعديل السطر بحيث يتم تحويل expiresIn إلى DateTimeOffset
+                var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
+
+                // تمرير expirationTime بدلاً من expiresIn
+                var resultt = new AuthRespons(
+                    user.Id,
+                    user.Email,
+                    user.FirstName,
+                    user.LastName,
+                    token,
+                    expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                    refreshToken,
+                    refreshTokenEXpirationDays
+                );
+
+                return Result.Success<AuthRespons>(resultt);
+
+            }
+            //401
+            return Result.Failure<AuthRespons>(result.IsNotAllowed?UeserError.EmailNotComfirmed:UeserError.InvalidCerdentials);
             }
         public async Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
         {
@@ -65,8 +80,20 @@ namespace Plant_Project.API.Services
                 ExpiresOn = refreshTokenEXpirationDays
             });
             await _userManager.UpdateAsync(user);
-            var respons = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, Newtoken, expiresIn, NewrefreshToken, refreshTokenEXpirationDays);
-            return Result.Success<AuthRespons>(respons);
+            var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
+
+            // تمرير expirationTime بدلاً من expiresIn
+            var resultt = new AuthRespons(
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                Newtoken,
+                expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                RefreshToken,
+                refreshTokenEXpirationDays
+            );
+            return Result.Success<AuthRespons>(resultt);
         }
 
         public async Task<Result> RevokeRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
@@ -115,7 +142,19 @@ namespace Plant_Project.API.Services
 
                 await _userManager.UpdateAsync(user);
                 //return authrespons
-                var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
+                var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
+
+                // تمرير expirationTime بدلاً من expiresIn
+                var resultt = new AuthRespons(
+                    user.Id,
+                    user.Email,
+                    user.FirstName,
+                    user.LastName,
+                    token,
+                    expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                    refreshToken,
+                    refreshTokenEXpirationDays
+                );
                 return Result.Success<AuthRespons>(resultt);
                 //var code= await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 ////var param = new Dictionary<string, string?>
