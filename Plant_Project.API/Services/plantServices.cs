@@ -163,15 +163,13 @@ namespace Plant_Project.API.Services
             return "/images/" + uniqueFileName;
         }
         private void DeleteImage(string imagePath)
-{
-    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath.TrimStart('/'));
+        {
+             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath.TrimStart('/'));
 
-    if (File.Exists(fullPath))
-    {
-        File.Delete(fullPath);
-    }
-}
-
-       
+            if (File.Exists(fullPath))
+            {
+               File.Delete(fullPath);
+            }
+        }
     }
 }

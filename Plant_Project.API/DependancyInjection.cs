@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Http.Features;
 using Plant_Project.API.Authentication.Filters;
 
 namespace Plant_Project.API
@@ -8,6 +9,7 @@ namespace Plant_Project.API
        public static IServiceCollection AddDependecies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
+        
             var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
             services.AddCors(options =>

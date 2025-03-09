@@ -1,8 +1,9 @@
 ﻿namespace Plant_Project.API.contracts.Users
 {
-    public record UpdateProfileRequest (
+    public record UpdateProfileRequest(
         string FirstName,
-        string LastName
-        );
-
+        string LastName,
+        IFormFile? ImagePath,  
+        string? PhoneNumber
+    );
 }

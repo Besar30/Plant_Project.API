@@ -4,7 +4,7 @@ namespace Plant_Project.API.Controllers
 {
     [Route("me")]
     [ApiController]
-[Authorize]
+    [Authorize]
     public class AccountController(IUserServices userServices) : ControllerBase
     {
         private readonly IUserServices _userServices = userServices;
@@ -17,7 +17,7 @@ namespace Plant_Project.API.Controllers
         }
         //https://localhost:7286/me/info
         [HttpPut("info")]
-        public async Task<IActionResult> Info([FromBody] UpdateProfileRequest request)
+        public async Task<IActionResult> Update([FromForm] UpdateProfileRequest request)
         {
             await _userServices.UpdateProfileAsync(User.GetUserId()!, request);  
             return NoContent();

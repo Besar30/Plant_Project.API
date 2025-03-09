@@ -4,6 +4,9 @@
         string UserName,
         string Email,
         String FirstName,
-        string LastName
+        string LastName,
+        string ImagePath,
+        string PhoneNumber
+
         );
 }

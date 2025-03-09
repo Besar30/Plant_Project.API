@@ -10,7 +10,7 @@ namespace Plant_Project.API.Controllers
     {
         private readonly IRoleServices _roleServices = roleServices;
         [HttpGet("")]
-        [HasPermission(Permissions.GetRoles)]
+      //  [HasPermission(Permissions.GetRoles)]
         public async Task<IActionResult> GetAll([FromQuery] bool includeDisable, CancellationToken cancellationToken)
         {
             var result= await _roleServices.GetAllAsync(includeDisable,cancellationToken);
@@ -28,8 +28,23 @@ namespace Plant_Project.API.Controllers
         {
             var result = await _roleServices.AddAsync(request);
             return result.IsSuccess ?
-                 Ok(result) : result.ToProblem(StatusCodes.Status400BadRequest);
+                 CreatedAtAction(nameof(Get),new {result.Value.Id,result.Value}) : result.ToProblem(StatusCodes.Status400BadRequest);
 
+        }
+
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> UpdateAll([FromRoute] string Id,[FromBody] RoleRequest request)
+        {
+            var result = await _roleServices.UpdateAsync(Id,request);
+            return result.IsSuccess ?
+                NoContent() : result.ToProblem(StatusCodes.Status400BadRequest);
+
+        }
+        [HttpPut("{id}/toggle-status")]
+        public async Task<IActionResult> ToggleStatus([FromRoute] string id)
+        {
+            var result=await _roleServices.ToggleStatusAsync(id);
+            return result.IsSuccess?NoContent():result.ToProblem(StatusCodes.Status404NotFound);
         }
     }
 }
