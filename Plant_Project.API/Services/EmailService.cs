@@ -12,28 +12,34 @@ public class EmailService(IOptions<MailSettings> mailSettings, ILogger<EmailServ
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        var message = new MimeMessage
-        {
-            Sender = MailboxAddress.Parse(_mailSettings.Mail),
-            Subject = subject
-        };
+		try
+		{
+			var message = new MimeMessage
+			{
+				Sender = MailboxAddress.Parse(_mailSettings.Mail),
+				Subject = subject
+			};
 
-        message.To.Add(MailboxAddress.Parse(email));
+			message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+			message.To.Add(MailboxAddress.Parse(email));
 
-        var builder = new BodyBuilder
-        {
-            HtmlBody = htmlMessage
-        };
+			var builder = new BodyBuilder { HtmlBody = htmlMessage };
+			message.Body = builder.ToMessageBody();
 
-        message.Body = builder.ToMessageBody();
+			using var smtp = new SmtpClient();
+			smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-        using var smtp = new SmtpClient();
+			await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+			await smtp.AuthenticateAsync(_mailSettings.Mail, _mailSettings.Password);
+			await smtp.SendAsync(message);
+			await smtp.DisconnectAsync(true);
 
-        _logger.LogInformation("Sending email to {email}", email);
-
-        smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-        smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-        await smtp.SendAsync(message);
-        smtp.Disconnect(true);
-    }
+			Console.WriteLine("✅ Success" + email);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("❌ Failuer " + ex.Message);
+			throw;
+		}
+	}
 }

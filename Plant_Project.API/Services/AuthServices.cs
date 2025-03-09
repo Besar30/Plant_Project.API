@@ -1,4 +1,7 @@
 ﻿
+using Plant_Project.API.Contracts.Authentication;
+using Plant_Project.API.Errors;
+
 namespace Plant_Project.API.Services;
 
 public class AuthServices(
@@ -47,18 +50,26 @@ public class AuthServices(
 
             await _userManager.UpdateAsync(user);
 
-            var respons = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
-            return Result.Success<AuthRespons>(respons);
-        }
-        var error = result.IsNotAllowed
-            ? UserErrors.InvalidCredentials
-            : result.IsLockedOut
-            ? UserErrors.LockedUser
-            : UserErrors.InvalidCredentials;
+			var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-        return Result.Failure<AuthRespons>(error);
-    }
+			// تمرير expirationTime بدلاً من expiresIn
+			var resultt = new AuthRespons(
+				user.Id,
+				user.Email,
+				user.FirstName,
+				user.LastName,
+				token,
+				expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+				refreshToken,
+				refreshTokenEXpirationDays
+			);
 
+			return Result.Success<AuthRespons>(resultt);
+		}
+		//401
+		return Result.Failure<AuthRespons>(result.IsNotAllowed ? UserErrors.EmailNotConfirmed : UserErrors.InvalidCredentials);
+	}
+    
 
     public async Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
     {
@@ -90,17 +101,28 @@ public class AuthServices(
         var (Newtoken, expiresIn) = _jwtProvider.GenerateToken(user, userRoles, userPermissions);
         var NewrefreshToken = GenerateRefreshToken();
         var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
+
         user.RefreshTokens.Add(new RefreshToken
         {
             Token = NewrefreshToken,
             ExpiresOn = refreshTokenEXpirationDays
         });
+
         await _userManager.UpdateAsync(user);
-        var respons = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, Newtoken, expiresIn, NewrefreshToken, refreshTokenEXpirationDays);
-        return Result.Success<AuthRespons>(respons);
-    }
+		var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-
+		var resultt = new AuthRespons(
+			user.Id,
+			user.Email,
+			user.FirstName,
+			user.LastName,
+			Newtoken,
+			expirationTime,   
+			RefreshToken,
+			refreshTokenEXpirationDays
+		);
+		return Result.Success<AuthRespons>(resultt);
+	}
 
     public async Task<Result> RevokeRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
     {
@@ -149,17 +171,43 @@ public class AuthServices(
                 ExpiresOn = refreshTokenEXpirationDays
             });
             await _userManager.UpdateAsync(user);
-            //return authrespons
-            var resultt = new AuthRespons(user.Id, user.Email, user.FirstName, user.LastName, token, expiresIn, refreshToken, refreshTokenEXpirationDays);
-            return Result.Success(resultt);
+			var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-        }
-        //badRequest
+			var resultt = new AuthRespons(
+				user.Id,
+				user.Email,
+				user.FirstName,
+				user.LastName,
+				token,
+				expirationTime,  
+				refreshToken,
+				refreshTokenEXpirationDays
+			);
+			return Result.Success<AuthRespons>(resultt);
+
+		}
+  
         var error = result.Errors.First();
         return Result.Failure<AuthRespons>(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
 
     }
-    private string GenerateRefreshToken()
+
+	public async Task<Result> ResetPassword(ResetPasswordRequest request)
+	{
+		var user = await _userManager.FindByEmailAsync(request.Email);
+		if (user == null)
+		{
+			return Result.Failure(UserErrors.EmailNotFound);
+		}
+		var result = await _userManager.ResetPasswordAsync(user, request.Token!, request.NewPassword!);
+		if (!result.Succeeded)
+		{
+			var error = result.Errors.First();
+			return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+		}
+		return Result.Success();
+	}
+	private string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
@@ -198,17 +246,6 @@ public class AuthServices(
     private async Task<(IEnumerable<string> roles, IEnumerable<string> permissions)> GetUserRolesAndPermissions(ApplicationUser user, CancellationToken cancellationToken)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
-
-        //var userPermissions = await _context.Roles
-        //    .Join(_context.RoleClaims,
-        //        role => role.Id,
-        //        claim => claim.RoleId,
-        //        (role, claim) => new { role, claim }
-        //    )
-        //    .Where(x => userRoles.Contains(x.role.Name!))
-        //    .Select(x => x.claim.ClaimValue!)
-        //    .Distinct()
-        //    .ToListAsync(cancellationToken);
 
         var userPermissions = await (from r in _context.Roles
                                      join p in _context.RoleClaims

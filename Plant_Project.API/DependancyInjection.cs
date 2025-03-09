@@ -1,6 +1,4 @@
-﻿
-
-using MapsterMapper;
+﻿using MapsterMapper;
 using Plant_Project.API.Settings;
 
 namespace Plant_Project.API
@@ -16,13 +14,25 @@ namespace Plant_Project.API
 
 			services.AddAuthConfig(configuration);
 
-            //services.AddAuthentication()
-	           //     .AddGoogle(options =>
-	           //     {
-		          //      options.ClientId = configuration["Authentication:Google:ClientId"];
-		          //      options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-	           //     });
-			
+			var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
+
+			services.AddCors(options =>
+			{
+				options.AddPolicy("AllowSpecificOrigins", builder =>
+				{
+					builder.WithOrigins(allowedOrigins!) // ✅ Allow only defined origins
+						   .AllowAnyHeader()
+						   .AllowAnyMethod()
+						   .AllowCredentials(); // ✅ Allow credentials like cookies/tokens
+				});
+			});
+			//services.AddAuthentication()
+			//     .AddGoogle(options =>
+			//     {
+			//      options.ClientId = configuration["Authentication:Google:ClientId"];
+			//      options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+			//     });
+
 			var ConnectionString = configuration.GetConnectionString("DefaultConnection");
 
 			services.AddDbContext<ApplicationDbContext>(options => 
@@ -33,6 +43,7 @@ namespace Plant_Project.API
 
 			services.AddScoped<IAuthServices, AuthServices>();
 			services.AddScoped<IPlantServices, PlantServices>();
+			services.AddScoped<ICategoryServices, CategoryServices>();
 			services.AddScoped<ICartServices, CartServices>();
 			services.AddScoped<IPaymentService, PaymentService>();
 			services.AddScoped<IEmailSender, EmailService>();
@@ -57,7 +68,7 @@ namespace Plant_Project.API
             services.AddSwaggerGen();
             return services;
         }
-        //sdcnsdnc 
+        
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddIdentity<ApplicationUser,ApplicationRole>()

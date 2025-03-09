@@ -3,6 +3,7 @@ namespace Plant_Project.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RolesController(IRoleService roleService) : ControllerBase
 {
     private readonly IRoleService _roleService = roleService;

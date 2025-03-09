@@ -21,7 +21,7 @@ namespace Plant_Project.API.persistence
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.ConfigureWarnings(warnings =>
-	   warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+				 warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
 		}
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{

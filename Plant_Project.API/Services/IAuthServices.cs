@@ -1,4 +1,6 @@
-﻿namespace Plant_Project.API.Services
+﻿using Plant_Project.API.Contracts.Authentication;
+
+namespace Plant_Project.API.Services
 {
     public interface IAuthServices
     {
@@ -7,6 +9,8 @@
         Task<Result> RevokeRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default);
         Task<Result<AuthRespons>> RegisterAsync(RegisterRequest RegisterReq, CancellationToken cancellationToken = default);
         Task<Result> SendResetPasswordCodeAsync(string email);
-		
+        Task<Result> ResetPassword(ResetPasswordRequest request);
+
+
 	}
 }

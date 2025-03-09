@@ -21,6 +21,12 @@ namespace Plant_Project.API.Errors
 
 		public static readonly Error DuplicatedEmail =
 			new("User.DuplicatedEmail", "Another user with the same email is already exists", StatusCodes.Status409Conflict);
+		
+		public static readonly Error EmailNotConfirmed =
+			new("User.EmailNotConfirmed", "Email Not Confirmed", StatusCodes.Status400BadRequest);
+		
+		public static readonly Error EmailNotFound =
+			new("User.EmailNotFound", "Email Not found", StatusCodes.Status404NotFound);
 
 		public static readonly Error PasswordNotComfirmed =
             new("User.Password Not Comfirmed", "password not comfirmed", StatusCodes.Status400BadRequest);

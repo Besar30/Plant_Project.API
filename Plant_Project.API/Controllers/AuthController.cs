@@ -1,4 +1,6 @@
-﻿using Plant_Project.API.Contracts.Authentication;
+﻿using Plant_Project.API.Abstraction;
+using Plant_Project.API.Contracts.Authentication;
+using Plant_Project.API.Errors;
 
 namespace Plant_Project.API.Controllers
 {
@@ -15,9 +17,24 @@ namespace Plant_Project.API.Controllers
         public async Task<IActionResult> LoginAcync(LoginRequestDTO Request, CancellationToken cancellationToken)
         {
             var result = await _authServices.GetTokenaync(Request.Email, Request.Password, cancellationToken);
+			if (result.IsSuccess)
+			{
+			
+				Response.Cookies.Append("AuthToken", result.Value.Token, new CookieOptions
+				{
+					HttpOnly = true, 
+					Secure = true,   
+					SameSite = SameSiteMode.Strict, 
+					Expires = result.Value.ExpirestIn 
+				});
 
-            return result.IsSuccess ? Ok(result) : result.ToProblem();
-        }
+				return Ok(result);
+			}
+			else if (result.error == UserErrors.EmailNotConfirmed)
+				return result.ToProblem();
+
+			return result.ToProblem();
+		}
 
 
         [HttpPost("Refresh")]
@@ -55,6 +72,15 @@ namespace Plant_Project.API.Controllers
 			return result.IsSuccess ? Ok() : result.ToProblem();
 		}
 
-	
+		[HttpPost("reset-password")]
+		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest ResetPassword)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest();
+			var result = await _authServices.ResetPassword(ResetPassword);
+			return result.IsSuccess ?
+				Ok() : result.ToProblem();
+		}
+
 	}
 }

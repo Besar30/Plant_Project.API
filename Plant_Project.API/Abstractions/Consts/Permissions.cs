@@ -9,7 +9,12 @@ public static class Permissions
     public const string UpdatePlant = "Plant:update";
     public const string DeletePlant = "Plant:delete";
 
-    public const string GetUsers = "users:read";
+	public const string GetCategory = "Category :read";
+	public const string AddCategory = "Category :add";
+	public const string UpdateCategory = "Category :update";
+	public const string DeleteCategory = "Category :delete";
+
+	public const string GetUsers = "users:read";
     public const string AddUsers = "users:add";
     public const string UpdateUsers = "users:update";
 

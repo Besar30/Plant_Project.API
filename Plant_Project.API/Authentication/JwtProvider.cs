@@ -1,12 +1,4 @@
-﻿
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Plant_Project.API.Abstractions.Consts;
-using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Plant_Project.API.Authentication
 {
@@ -31,8 +23,8 @@ namespace Plant_Project.API.Authentication
                 issuer: _options.Issuer,
                 audience: _options.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_options.ExpiryMinutes),
-                signingCredentials: signingCredentials
+				expires: DateTime.UtcNow.AddMinutes(_options.ExpiryMinutes),
+				signingCredentials: signingCredentials
                 );
             return (token: new JwtSecurityTokenHandler().WriteToken(token), expiresIN: (_options.ExpiryMinutes * 60));
         }

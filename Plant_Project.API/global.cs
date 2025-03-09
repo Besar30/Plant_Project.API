@@ -28,6 +28,7 @@ global using AuthorizeNet.Api.Controllers;
 
 
 
+global using Plant_Project.API.contracts.Category;
 global using Plant_Project.API.contracts.Payment;
 global using Plant_Project.API.contracts.Cart;
 global using Plant_Project.API;
