@@ -9,7 +9,7 @@ namespace Plant_Project.API
        public static IServiceCollection AddDependecies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
-        
+
             var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
             services.AddCors(options =>
@@ -22,6 +22,7 @@ namespace Plant_Project.API
                            .AllowCredentials(); // ✅ Allow credentials like cookies/tokens
                 });
             });
+
             services.AddAddSwaggerServices();
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IEmailSender,EmailService>();
@@ -78,6 +79,16 @@ namespace Plant_Project.API
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSetting?.Key!)),
                 ValidIssuer = JwtSetting?.Issuer,
                 ValidAudience = JwtSetting?.Audience
+            };
+            o.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = ctx =>
+                {
+                    ctx.Request.Cookies.TryGetValue("accessToken", out var accessToken);
+                    if (!string.IsNullOrEmpty(accessToken))
+                        ctx.Token = accessToken;
+                    return Task.CompletedTask;
+                }
             };
 
         });

@@ -24,13 +24,13 @@ namespace Plant_Project.API.Controllers
 
             if (result.IsSuccess)
             {
-                // حفظ التوكن في الكوكيز
-                Response.Cookies.Append("AuthToken", result.Value.Token, new CookieOptions
+                Response.Cookies.Append("accessToken", result.Value.Token, new CookieOptions
                 {
                     HttpOnly = true, // حماية من الوصول عبر JavaScript (أفضل أمانًا)
                     Secure = true,   // مطلوب في HTTPS
-                    SameSite = SameSiteMode.Strict, // لمنع هجمات CSRF
-                    Expires = result.Value.ExpirestIn // انتهاء صلاحية الكوكيز مع انتهاء التوكن
+                    SameSite = SameSiteMode.None, // لمنع هجمات CSRF
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    IsEssential = true,
                 });
 
                 return Ok(result);
