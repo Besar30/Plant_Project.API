@@ -80,7 +80,8 @@ namespace Plant_Project.API.Services
 
                     // حفظ الصورة الجديدة
                     string newImagePath = await SaveImageAsync(request.ImagePath);
-                    Plant.ImagePath = newImagePath;
+                    var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{newImagePath}";
+                    Plant.ImagePath = absUri;
                 }
             }
             Plant.Name = request.Name;
@@ -111,7 +112,7 @@ namespace Plant_Project.API.Services
                plant.ImagePath,
                plant.Is_Avilable,
                category!.Name
-       );
+            );
 
             return Result.Success(plantResponse);
         }

@@ -30,7 +30,6 @@ namespace Plant_Project.API.Controllers
                 Ok(result.Value) : result.ToProblem(StatusCodes.Status404NotFound);
         }
         [Authorize(Roles = DefaultRoles.Admin)]
-
         [HttpPost("")]
         public async Task<IActionResult> AddAsync([FromBody]CategoryRequest request, CancellationToken cancellationToken)
         {
