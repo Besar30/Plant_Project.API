@@ -20,7 +20,7 @@ namespace Plant_Project.API.Controllers
             return Ok(result);
         }
         //https://localhost:7286/api/Plant
-        [HasPermission(Permissions.AddPlant)]
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPost("")]
         public async Task<IActionResult> AddPlantAsync([FromForm] PlantsRequest request,CancellationToken cancellationToken)
         {

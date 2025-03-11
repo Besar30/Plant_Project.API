@@ -11,7 +11,8 @@ namespace Plant_Project.API.Controllers
     public class RolesController (IRoleServices roleServices): ControllerBase
     {
         private readonly IRoleServices _roleServices = roleServices;
-        [HasPermission(Permissions.GetRoles)]
+        //[HasPermission(Permissions.GetRoles)]   
+        [Authorize(Roles =DefaultRoles.Admin)]
         [HttpGet("")]
         public async Task<IActionResult> GetAll([FromQuery] bool includeDisable, CancellationToken cancellationToken)
         {

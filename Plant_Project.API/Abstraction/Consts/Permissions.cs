@@ -30,28 +30,5 @@
         // method to get all permissions
         public static IList<string?> GetAllPermissions() =>
             typeof(Permissions).GetFields().Select(x => x.GetValue(x) as string).ToList();
-
-        //        public static IList<string> GetAllPermissions() => new List<string>
-        //       {
-        //    "Plant:read",
-        //    "Plant:Add",
-        //    "Plant:Delete",
-        //    "Plant:Update",
-        //    "Category:read",
-        //    "Category:Add",
-        //    "Category:Delete",
-        //    "Category:Update",
-        //    "Users:read",
-        //     "Users:Add",
-        //     "Users:Update",
-        //      "Roles:read",
-        //      "Roles:Add",
-        //      "Roles:Update",
-        //      "results:read"
-        //    // أضف باقي الصلاحيات هنا
-        //};
-
-
-
     }
 }

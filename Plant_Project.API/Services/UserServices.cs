@@ -1,16 +1,16 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Plant_Project.API.Abstraction;
 using Plant_Project.API.contracts.Users;
 
 namespace Plant_Project.API.Services
 {
-    public class UserServices (UserManager<ApplicationUser> userManager): IUserServices
+    public class UserServices (UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor) : IUserServices
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
-
-      
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<Result<UserProfileResponse>> GetProfileAsync(string UserId)
         {
@@ -22,27 +22,38 @@ namespace Plant_Project.API.Services
 
         public async Task<Result> UpdateProfileAsync(string UserId, UpdateProfileRequest updateProfileRequest)
         {
-            var user=await _userManager.FindByIdAsync(UserId);
-            user!.FirstName=updateProfileRequest.FirstName;
-            user.LastName=updateProfileRequest.LastName;
-            user.PhoneNumber=updateProfileRequest.PhoneNumber;
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null)
+                return Result.Failure(UeserError.EmailNotFound);
+
+            user.FirstName = updateProfileRequest.FirstName;
+            user.LastName = updateProfileRequest.LastName;
+            user.PhoneNumber = updateProfileRequest.PhoneNumber;
+
             if (updateProfileRequest.ImagePath != null && updateProfileRequest.ImagePath.FileName != user.ImagePath)
             {
                 if (!string.IsNullOrEmpty(user.ImagePath))
                 {
                     DeleteImage(user.ImagePath);
                 }
-                string imagePath = await SaveImageAsync(updateProfileRequest.ImagePath); // تعديل هنا
-                user.ImagePath = imagePath;
+
+                string imagePath = await SaveImageAsync(updateProfileRequest.ImagePath);
+
+                // حفظ المسار الكامل في قاعدة البيانات
+                var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+                user.ImagePath = absUri;
             }
-            else if(user.ImagePath!=null && updateProfileRequest.ImagePath == null)
+            else if (user.ImagePath != null && updateProfileRequest.ImagePath == null)
             {
                 DeleteImage(user.ImagePath);
                 user.ImagePath = "";
             }
+
             await _userManager.UpdateAsync(user);
-            return Result.Success();
+
+            return Result.Success(user.Adapt<UserProfileResponse>());
         }
+
         public async Task<Result> ChangePasswordAsync(string UserId, ChangePasswordRequest request )
         {
             var user= await _userManager.FindByIdAsync(UserId);
@@ -79,5 +90,7 @@ namespace Plant_Project.API.Services
                 File.Delete(fullPath);
             }
         }
+
+     
     }
 }

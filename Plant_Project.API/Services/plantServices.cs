@@ -6,9 +6,11 @@ using Plant_Project.API.Entities;
 
 namespace Plant_Project.API.Services
 {
-    public class plantServices (ApplicationDbContext context): IplantServices
+    public class plantServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IplantServices
     {
         private readonly ApplicationDbContext _context = context;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
         public async Task<Result<List<PlantsResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var result= await _context.plants.Include(p=>p.Category).ToListAsync(cancellationToken);
@@ -36,12 +38,14 @@ namespace Plant_Project.API.Services
                 return Result.Failure(CategoryError.CategoryNotFound);
             }
             string imagePath = await SaveImageAsync(request.ImagePath);
+            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+
             var plant = new Plant
             {
                 Name = request.Name,
                 Description = request.Description,
                 Price = request.Price,
-                ImagePath = imagePath,
+                ImagePath = absUri,
                 CategoryId = request.CategoryId,
                 How_To_Plant = request.How_To_Plant,
                 Quantity = request.Quantity

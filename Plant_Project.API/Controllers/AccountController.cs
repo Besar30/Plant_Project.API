@@ -5,9 +5,11 @@ namespace Plant_Project.API.Controllers
     [Route("me")]
     [ApiController]
     [Authorize]
-    public class AccountController(IUserServices userServices) : ControllerBase
+    public class AccountController(IUserServices userServices,ApplicationDbContext context) : ControllerBase
     {
         private readonly IUserServices _userServices = userServices;
+        private readonly ApplicationDbContext _context = context;
+
         //https://localhost:7286/me
         [HttpGet("")]
         public async Task<IActionResult> Info()
@@ -19,7 +21,8 @@ namespace Plant_Project.API.Controllers
         [HttpPut("info")]
         public async Task<IActionResult> Update([FromForm] UpdateProfileRequest request)
         {
-            await _userServices.UpdateProfileAsync(User.GetUserId()!, request);  
+             await _userServices.UpdateProfileAsync(User.GetUserId()!, request);
+            
             return NoContent();
         }
 

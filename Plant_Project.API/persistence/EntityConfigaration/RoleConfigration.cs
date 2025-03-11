@@ -8,7 +8,7 @@ namespace Plant_Project.API.persistence.EntityConfigaration
         public void Configure(EntityTypeBuilder<ApplicationRole> builder)
         {
             // بيانات افتراضية
-            builder.HasData(
+            builder.HasData([
                 new ApplicationRole
                 {
                     Id = DefaultRoles.AdminRoleId,
@@ -24,7 +24,7 @@ namespace Plant_Project.API.persistence.EntityConfigaration
                     ConcurrencyStamp = DefaultRoles.MemberRoleConcurrencyStamp,
                     IsDefault = true // تعيين دور الافتراضي للمستخدم العادي
                 }
-            );
+           ] );
         }
     }
 }
