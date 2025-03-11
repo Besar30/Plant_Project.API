@@ -31,6 +31,8 @@ namespace Plant_Project.API.Controllers
 
         }
         //https://localhost:7286/api/Plant/1
+        [Authorize(Roles = DefaultRoles.Admin)]
+
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdatePlantAsync([FromRoute] int Id, [FromForm]  PlantsRequest request,CancellationToken cancellationToken)
         {
@@ -58,6 +60,7 @@ namespace Plant_Project.API.Controllers
                 Ok(result.Value) :
                 result.ToProblem(StatusCodes.Status404NotFound);
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int Id,CancellationToken cancellationToken)
         {

@@ -57,7 +57,6 @@ namespace Plant_Project.API.Services
         }
         public async Task<Result<List<PlantsResponse>>> GetAllPlantByCategoryName(string categoryName, CancellationToken cancellationToken)
         {
-            
             var category = await _Context.categories.Where(x => x.Name == categoryName).FirstOrDefaultAsync(cancellationToken);
             if(category == null)
             {

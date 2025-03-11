@@ -29,6 +29,8 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                 Ok(result.Value) : result.ToProblem(StatusCodes.Status404NotFound);
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
+
         [HttpPost("")]
         public async Task<IActionResult> AddAsync([FromBody]CategoryRequest request, CancellationToken cancellationToken)
         {
@@ -37,6 +39,7 @@ namespace Plant_Project.API.Controllers
                 Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
         }
         //https://localhost:7286/Category
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPut("{categoryId}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int categoryId, [FromBody] CategoryRequest request, CancellationToken cancellationToken)
         {
@@ -45,12 +48,21 @@ namespace Plant_Project.API.Controllers
                 Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
         }
         //https://localhost:7286/Category/3
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteAsync([FromRoute] int Id,CancellationToken cancellationToken)
         {
             var result= await _categoryServices.DeleteCategoryAsync(Id,cancellationToken);
             return result.IsSuccess ?
                 Ok() : result.ToProblem(StatusCodes.Status404NotFound);
+        }
+        [HttpGet("{Name}/plantByCategoryName")]
+        public async Task<IActionResult> GetPlantsByCategoryName([FromRoute] string Name, CancellationToken cancellationToken)
+        {
+            var result = await _categoryServices.GetAllPlantByCategoryName(Name, cancellationToken);
+
+            return result.IsSuccess ?
+                Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
         }
     }
 }
