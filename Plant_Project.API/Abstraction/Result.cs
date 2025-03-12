@@ -1,4 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Plant_Project.API.contracts.Posts;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Plant_Project.API.Abstraction
 {
@@ -22,6 +23,11 @@ namespace Plant_Project.API.Abstraction
 
         public static Result<TValue> Success<TValue>(TValue value) => new Result<TValue>(value, true, Error.None);
         public static Result<TValue> Failure<TValue>(Error error) => new Result<TValue>(default, false, error);
+
+        internal static Result<T> Success<T>(PostResponse result)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class Result<TValue> : Result
     {

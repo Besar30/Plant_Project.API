@@ -5,7 +5,6 @@
         RuleFor(x => x.FirstName).NotEmpty().Length(3, 100);
         RuleFor(x => x.LastName).NotEmpty().Length(3, 100);
 
-        // لا حاجة لـ NotNull هنا إذا كان مسموحًا بـ null
         RuleFor(x => x.ImagePath)
             .Must(BeAValidImageOrNull).WithMessage("File Allowed Extention{.jpg, .jpeg, .png}");
 

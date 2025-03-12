@@ -20,7 +20,7 @@ namespace Plant_Project.API.Controllers
       
             return Ok(result);
         }
-
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpGet("{Id}")]
         public async Task<IActionResult> Get(string Id)
         {
@@ -28,6 +28,7 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                  Ok(result) : result.ToProblem(StatusCodes.Status404NotFound); 
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPost("")]
         public async Task<IActionResult> AddAll([FromBody] RoleRequest request)
         {
@@ -36,7 +37,7 @@ namespace Plant_Project.API.Controllers
                  CreatedAtAction(nameof(Get),new {result.Value.Id,result.Value}) : result.ToProblem(StatusCodes.Status400BadRequest);
 
         }
-
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateAll([FromRoute] string Id,[FromBody] RoleRequest request)
         {
@@ -45,6 +46,7 @@ namespace Plant_Project.API.Controllers
                 NoContent() : result.ToProblem(StatusCodes.Status400BadRequest);
 
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPut("{id}/toggle-status")]
         public async Task<IActionResult> ToggleStatus([FromRoute] string id)
         {
