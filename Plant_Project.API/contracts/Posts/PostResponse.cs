@@ -3,7 +3,8 @@
     public record PostResponse(
         int Id,
         string Content,
-        string ImagePath
+        string ImagePath,
+        string UserName
         );
     
 }

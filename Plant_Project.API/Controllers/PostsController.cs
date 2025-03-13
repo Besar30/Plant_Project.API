@@ -11,15 +11,13 @@ namespace Plant_Project.API.Controllers
     {
         private readonly IPostServices _postServices = postServices;
         [Authorize(Roles =DefaultRoles.Member)]
-        //[Authorize(Roles = DefaultRoles.Admin)]
-
         [HttpGet("")]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var Posts= await _postServices.GetAll(cancellationToken);
             return Ok(Posts);
         }
-
+        [Authorize(Roles = DefaultRoles.Member)]
         [HttpPost("")]
         public async Task<IActionResult>AddPostAsync([FromForm]PostRequestDTO post,CancellationToken cancellationToken)
         {
@@ -29,13 +27,13 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                Ok(result) : result.ToProblem(StatusCodes.Status400BadRequest);
         }
-
-
+        [Authorize(Roles = DefaultRoles.Member)]
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetById([FromRoute]int Id)
         {
-            var Posts = await _postServices.GetById(Id);
-            return Ok(Posts);
+            var result = await _postServices.GetById(Id);
+            return result.IsSuccess?
+                Ok(result):result.ToProblem(StatusCodes.Status400BadRequest);
         }
     }
 }

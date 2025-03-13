@@ -10,9 +10,20 @@ namespace Plant_Project.API.Services
 
         public async Task<Result<List<PostResponse>>> GetAll(CancellationToken cancellationToken)
         {
-           var posts= await _context.Posts.OrderByDescending(p=>p.CreatedAt).ToListAsync(cancellationToken);
-            var result = posts.Adapt<List< PostResponse>>();
-            return Result.Success<List<PostResponse >>(result);
+           var posts = await _context.Posts
+        .Include(p => p.User) // تضمين بيانات المستخدم لكل Post
+        .OrderByDescending(p => p.CreatedAt)
+        .ToListAsync(cancellationToken);
+
+    var result = posts.Select(p => new PostResponse
+    (
+        p.Id,
+        p.Content,
+        p.ImagePath,
+        p.User.UserName! // جلب اسم المستخدم
+    )).ToList();
+
+    return Result.Success(result);
         }
 
         public async Task<Result> AddPost(PostRequestDTO post,string UserId, CancellationToken cancellationToken)
@@ -36,10 +47,19 @@ namespace Plant_Project.API.Services
         }
         public async Task<Result<PostResponse>> GetById(int Id)
         {
-            var post =  _context.Posts.Where(x=>x.Id == Id).FirstOrDefault();
+            var post = await _context.Posts
+                        .Include(p => p.User) 
+                        .FirstOrDefaultAsync(x => x.Id == Id);
+
             if (post == null)
                 return Result.Failure<PostResponse>(PostErrors.PostNotFound);
-            var response= post.Adapt<PostResponse>();
+            var response = new PostResponse(
+                post.Id,
+                post.Content,
+                post.ImagePath,
+                post.User.UserName!
+            );
+
             return Result.Success(response);
         }
 
