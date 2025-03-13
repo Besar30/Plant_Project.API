@@ -32,6 +32,7 @@ namespace Plant_Project.API
             services.AddScoped<IplantServices,plantServices>();
             services.AddScoped<IRoleServices, RoleServices>();
             services.AddScoped<IPostServices, PostServices>();
+            services.AddScoped<ICommentServices, CommentServices>();
             services.AddAuthConfig(configuration);
             var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();

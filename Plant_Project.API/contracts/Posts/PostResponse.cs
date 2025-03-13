@@ -4,7 +4,8 @@
         int Id,
         string Content,
         string ImagePath,
-        string UserName
+        string UserName,
+        string ImagePathUser
         );
     
 }

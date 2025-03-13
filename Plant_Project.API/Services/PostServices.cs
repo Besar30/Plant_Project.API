@@ -10,20 +10,21 @@ namespace Plant_Project.API.Services
 
         public async Task<Result<List<PostResponse>>> GetAll(CancellationToken cancellationToken)
         {
-           var posts = await _context.Posts
-        .Include(p => p.User) // تضمين بيانات المستخدم لكل Post
-        .OrderByDescending(p => p.CreatedAt)
-        .ToListAsync(cancellationToken);
+               var posts = await _context.Posts
+                            .Include(p => p.User)
+                            .OrderByDescending(p => p.CreatedAt)
+                            .ToListAsync(cancellationToken);
 
-    var result = posts.Select(p => new PostResponse
-    (
-        p.Id,
-        p.Content,
-        p.ImagePath,
-        p.User.UserName! // جلب اسم المستخدم
-    )).ToList();
+             var result = posts.Select(p => new PostResponse
+             (
+                    p.Id,
+                    p.Content,
+                    p.ImagePath,
+                    p.User.UserName!,
+                    p.User.ImagePath
+            )).ToList();
 
-    return Result.Success(result);
+             return Result.Success(result);
         }
 
         public async Task<Result> AddPost(PostRequestDTO post,string UserId, CancellationToken cancellationToken)
@@ -57,9 +58,9 @@ namespace Plant_Project.API.Services
                 post.Id,
                 post.Content,
                 post.ImagePath,
-                post.User.UserName!
+                post.User.UserName!,
+                post.User.ImagePath
             );
-
             return Result.Success(response);
         }
 
