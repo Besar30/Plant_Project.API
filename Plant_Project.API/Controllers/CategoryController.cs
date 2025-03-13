@@ -9,7 +9,7 @@ namespace Plant_Project.API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class CategoryController(ICategoryServices categoryServices) : ControllerBase
     {
         private readonly ICategoryServices _categoryServices = categoryServices;
@@ -21,7 +21,7 @@ namespace Plant_Project.API.Controllers
             return Ok(result);
         }
         //https://localhost:7286/Category/Id
-        [HttpGet("Id")]
+        [HttpGet("{Id}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int Id, CancellationToken cancellationToken)
         {
             var result = await _categoryServices.GetCategoryByIdAsync(Id, cancellationToken);
@@ -31,7 +31,7 @@ namespace Plant_Project.API.Controllers
         }
         [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPost("")]
-        public async Task<IActionResult> AddAsync([FromBody]CategoryRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddAsync([FromForm]CategoryRequest request, CancellationToken cancellationToken)
         {
             var result = await _categoryServices.AddCategoryAsync(request, cancellationToken);
             return result.IsSuccess ?
@@ -40,7 +40,7 @@ namespace Plant_Project.API.Controllers
         //https://localhost:7286/Category
         [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPut("{categoryId}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int categoryId, [FromBody] CategoryRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromRoute] int categoryId, [FromForm] CategoryRequest request, CancellationToken cancellationToken)
         {
             var result = await _categoryServices.UpdateCategoryAsync(categoryId, request, cancellationToken);
             return result.IsSuccess ?

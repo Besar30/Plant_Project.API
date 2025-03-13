@@ -5,23 +5,38 @@ using Plant_Project.API.contracts.Plants;
 using Plant_Project.API.Errors;
 namespace Plant_Project.API.Services
 {
-    public class CategoryServices(ApplicationDbContext Context) : ICategoryServices
+    public class CategoryServices(ApplicationDbContext Context,IHttpContextAccessor httpContextAccessor) : ICategoryServices
     {
         private readonly ApplicationDbContext _Context = Context;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
         public async Task<Result<List<CategoryResponse>>> GetAllCategoriesAsync(CancellationToken cancellationToken)
         {
            var result= await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
-           var categoryRespons=result.Adapt<List<CategoryResponse>>();
+
+            var categoryRespons = result.Select(x => new CategoryResponse(
+                x.Id,
+                x.Name,
+                x.Description,
+                x.ImagePath
+                )).ToList();
 
            return Result.Success(categoryRespons);
         }
         public async Task<Result<CategoryResponse>> GetCategoryByIdAsync(int Id, CancellationToken cancellation)
         {
             var result = await _Context.categories.Where(x => x.Id == Id).FirstOrDefaultAsync(cancellation);
+
             if (result == null) { 
               return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
             }
-            var category=result.Adapt<CategoryResponse>();
+            //var category=result.Adapt<CategoryResponse>();
+            var category = new CategoryResponse(
+                result.Id,
+                result.Name,
+                result.Description,
+                result.ImagePath
+                );
             return Result.Success(category);
         }
 
@@ -30,10 +45,16 @@ namespace Plant_Project.API.Services
             var result = await _Context.categories.AnyAsync(x=>x.Name==request.Name,cancellationToken);
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
+
+            string imagePath = await SaveImageAsync(request.ImagePath);
+            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+
+
             var category = new Category
             {
                 Name = request.Name,
                 Description = request.Description,
+                ImagePath= absUri
             };
             await _Context.AddAsync(category, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
@@ -49,9 +70,12 @@ namespace Plant_Project.API.Services
             var result = await _Context.categories.AnyAsync(x => x.Name == request.Name && x.Id!=categoryId, cancellationToken);
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
-            category.Description = request.Description;
+            string imagePath = await SaveImageAsync(request.ImagePath);
+            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+
             category.Description = request.Description;
             category.Name = request.Name;
+            category.ImagePath = absUri;
             await _Context.SaveChangesAsync(cancellationToken);
             return Result.Success();
         }
@@ -87,6 +111,24 @@ namespace Plant_Project.API.Services
             _Context.categories.Remove(result);
             await _Context.SaveChangesAsync(cancellationToken);
             return Result.Success();
+        }
+
+
+        private async Task<string> SaveImageAsync(IFormFile imageFile)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+
+            return "/images/" + uniqueFileName;
         }
     }
 }

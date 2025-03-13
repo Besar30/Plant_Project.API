@@ -3,7 +3,8 @@
     public record CategoryResponse(
         int Id,
         string Name,
-        string Description
+        string Description,
+        string ImagePath
         );
 
 }

@@ -44,7 +44,6 @@ namespace Plant_Project.API.Services
 
         public async Task<Result> DeleteComment(int CommentId,string userId,CancellationToken cancellationToken)
         {
-
             var comment = await _context.Comments
                 .Include(c => c.Post) 
                 .FirstOrDefaultAsync(x => x.Id == CommentId);
@@ -52,7 +51,6 @@ namespace Plant_Project.API.Services
             {
                 return Result.Failure(CommentErrors.CommentNotFound);
             }
-
             if (comment.UserId == userId)
             {
                 _context.Comments.Remove(comment);
