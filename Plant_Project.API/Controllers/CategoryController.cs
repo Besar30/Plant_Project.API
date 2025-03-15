@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Plant_Project.API.Abstraction;
+﻿using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.contracts.Categorys;
-using Plant_Project.API.Services;
-
 namespace Plant_Project.API.Controllers
 {
     [Route("[controller]")]

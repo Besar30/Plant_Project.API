@@ -1,9 +1,5 @@
 ﻿using Plant_Project.API.contracts;
 using Plant_Project.API.contracts.Comments;
-using Plant_Project.API.Entities;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace Plant_Project.API.Services
 {
     public class CommentServices(ApplicationDbContext context):ICommentServices
