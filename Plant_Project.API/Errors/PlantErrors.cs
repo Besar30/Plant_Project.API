@@ -7,5 +7,7 @@
 
         public static readonly Error PlantDublicated =
            new Error("Plant Dublicated", "Plant already Exist");
+        public static readonly Error QuantityShortage =
+        new("User.QuantityShortage", "Plant quantity is not enght for your request");
     }
 }

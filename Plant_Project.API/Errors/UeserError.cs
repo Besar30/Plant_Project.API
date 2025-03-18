@@ -28,6 +28,10 @@ namespace Plant_Project.API.Errors
         new("User.DuplicatedConfirmation", "Email already confirmed");
         public static readonly Error EmailNotFound=
           new("User.EmailNotFound", "Email Not Found");
+
+
+        public static readonly Error UserNotFound =
+        new("User.UserNotFound", "User is not found");
     }
 }
 

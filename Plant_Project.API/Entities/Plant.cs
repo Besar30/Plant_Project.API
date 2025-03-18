@@ -25,5 +25,10 @@
 
         public int PurchseCount { get; set; }
 
+
+
+        public ICollection<Cart>? Carts { get; set; }
+
+
     }
 }

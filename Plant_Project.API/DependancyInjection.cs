@@ -34,6 +34,10 @@ namespace Plant_Project.API
             services.AddScoped<IPostServices, PostServices>();
             services.AddScoped<ICommentServices, CommentServices>();
             services.AddScoped<IcacheService,cacheService>();
+            services.AddScoped<ICartServices, CartServices>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<PayAuthService>();
+
             services.AddAuthConfig(configuration);
             var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();

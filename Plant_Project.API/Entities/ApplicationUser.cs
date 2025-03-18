@@ -12,5 +12,11 @@ namespace Plant_Project.API.Entities
 
         public List<Post> Posts { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
+
+
+
+        public ICollection<Cart>? Carts { get; set; }
+        public ICollection<Order>? Orders { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
     }
 }
