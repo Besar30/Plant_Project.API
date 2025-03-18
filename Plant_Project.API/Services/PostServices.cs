@@ -3,19 +3,29 @@ using System.Collections.Generic;
 
 namespace Plant_Project.API.Services
 {
-    public class PostServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IPostServices
+    public class PostServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<PostServices> logger) : IPostServices
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IcacheService _icacheService = icacheService;
+        private readonly ILogger<PostServices> _logger = logger;
+        private const string _cachePerfix = "availablePost";
 
         public async Task<Result<List<PostResponse>>> GetAll(CancellationToken cancellationToken)
         {
-               var posts = await _context.Posts
+            var cacheKey = $"{_cachePerfix}_all";
+            var result = await _icacheService.GetAsync<List<PostResponse>> (cacheKey,cancellationToken);
+            if (result is not null) {
+                _logger.LogInformation("Get By cache");
+               return Result.Success(result);
+            }
+            _logger.LogInformation("Get By Database");
+            var posts = await _context.Posts
                             .Include(p => p.User)
                             .OrderByDescending(p => p.CreatedAt)
                             .ToListAsync(cancellationToken);
 
-             var result = posts.Select(p => new PostResponse
+              result = posts.Select(p => new PostResponse
              (
                     p.Id,
                     p.Content,
@@ -24,6 +34,7 @@ namespace Plant_Project.API.Services
                     p.User.ImagePath
             )).ToList();
 
+            await _icacheService.SetAsync(_cachePerfix,result,cancellationToken);
              return Result.Success(result);
         }
 
@@ -44,23 +55,34 @@ namespace Plant_Project.API.Services
             Post.UserId = UserId;
              _context.Add(Post);
             await _context.SaveChangesAsync(cancellationToken);
+            var cacheKey = $"{_cachePerfix}_all";
+            await _icacheService.RemoveAsync(cacheKey,cancellationToken);
             return Result.Success();
         }
         public async Task<Result<PostResponse>> GetById(int Id)
         {
+            var cacheKey = $"{_cachePerfix}-{Id}";
+            var response= await _icacheService.GetAsync<PostResponse>(cacheKey);
+            if(response is not null)
+            {
+                _logger.LogInformation("Get By Cache");
+                return Result.Success(response);
+            }
+            _logger.LogInformation("Get By Database");
             var post = await _context.Posts
                         .Include(p => p.User) 
                         .FirstOrDefaultAsync(x => x.Id == Id);
 
             if (post == null)
                 return Result.Failure<PostResponse>(PostErrors.PostNotFound);
-            var response = new PostResponse(
+             response = new PostResponse(
                 post.Id,
                 post.Content,
                 post.ImagePath,
                 post.User.UserName!,
                 post.User.ImagePath
             );
+            await _icacheService.SetAsync(cacheKey, response);
             return Result.Success(response);
         }
 
@@ -79,7 +101,5 @@ namespace Plant_Project.API.Services
             }
             return "/images/" + uniqueFileName;
         }
-
-       
     }
 }

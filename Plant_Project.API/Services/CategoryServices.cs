@@ -1,42 +1,65 @@
-﻿using Mapster;
-using Plant_Project.API.Abstraction;
-using Plant_Project.API.contracts.Categorys;
+﻿using Plant_Project.API.contracts.Categorys;
 using Plant_Project.API.contracts.Plants;
-using Plant_Project.API.Errors;
 namespace Plant_Project.API.Services
 {
-    public class CategoryServices(ApplicationDbContext Context,IHttpContextAccessor httpContextAccessor) : ICategoryServices
+    public class CategoryServices(ApplicationDbContext Context,IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<CategoryServices> logger) : ICategoryServices
     {
         private readonly ApplicationDbContext _Context = Context;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-
+        private readonly IcacheService _icacheService = icacheService;
+        private readonly ILogger<CategoryServices> _logger = logger;
+        private const string _cachePerfix = "availableCategory";
         public async Task<Result<List<CategoryResponse>>> GetAllCategoriesAsync(CancellationToken cancellationToken)
         {
-           var result= await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
+            var cacheKey = $"{_cachePerfix}_all";
+            var DataCache = await _icacheService.GetAsync<List<CategoryResponse>>(cacheKey, cancellationToken) ;
+            List<CategoryResponse> categoryRespons = [];
+            if (DataCache is not null)
+            {
+                _logger.LogInformation("Get By cache");
+                categoryRespons = DataCache;
+            }
+            else
+            {
+                _logger.LogInformation("Get By Database");
+                var result = await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
+                 categoryRespons = result.Select(x => new CategoryResponse(
+                    x.Id,
+                    x.Name,
+                    x.Description,
+                    x.ImagePath
+                    )).ToList();
 
-            var categoryRespons = result.Select(x => new CategoryResponse(
-                x.Id,
-                x.Name,
-                x.Description,
-                x.ImagePath
-                )).ToList();
+                await _icacheService.SetAsync(cacheKey, categoryRespons, cancellationToken);
+            }
 
-           return Result.Success(categoryRespons);
+            return Result.Success(categoryRespons);
         }
         public async Task<Result<CategoryResponse>> GetCategoryByIdAsync(int Id, CancellationToken cancellation)
         {
+            var cacheKey = $"{_cachePerfix}-{Id}";
+            var category = await _icacheService.GetAsync<CategoryResponse>(cacheKey, cancellation);
+            
+            if (category is not null)
+            {
+                _logger.LogInformation("get by cache");
+               return Result.Success(category);
+            }
+            _logger.LogInformation("get by database");
+
             var result = await _Context.categories.Where(x => x.Id == Id).FirstOrDefaultAsync(cancellation);
 
-            if (result == null) { 
-              return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
-            }
-            //var category=result.Adapt<CategoryResponse>();
-            var category = new CategoryResponse(
-                result.Id,
-                result.Name,
-                result.Description,
-                result.ImagePath
-                );
+                if (result == null)
+                {
+                    return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
+                }
+                category = new CategoryResponse(
+                    result.Id,
+                    result.Name,
+                    result.Description,
+                    result.ImagePath
+                    );
+                await _icacheService.SetAsync(cacheKey,category, cancellation);
             return Result.Success(category);
         }
 
@@ -45,11 +68,8 @@ namespace Plant_Project.API.Services
             var result = await _Context.categories.AnyAsync(x=>x.Name==request.Name,cancellationToken);
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
-
             string imagePath = await SaveImageAsync(request.ImagePath);
             var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
-
-
             var category = new Category
             {
                 Name = request.Name,
@@ -58,6 +78,8 @@ namespace Plant_Project.API.Services
             };
             await _Context.AddAsync(category, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
+            var cacheKey = $"{_cachePerfix}__all";
+            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
 
@@ -77,6 +99,10 @@ namespace Plant_Project.API.Services
             category.Name = request.Name;
             category.ImagePath = absUri;
             await _Context.SaveChangesAsync(cancellationToken);
+            var cacheKey = $"{_cachePerfix}_all";
+            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
+            cacheKey = $"{cacheKey}-{categoryId}";
+            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
         public async Task<Result<List<PlantsResponse>>> GetAllPlantByCategoryName(string categoryName, CancellationToken cancellationToken)
@@ -110,6 +136,10 @@ namespace Plant_Project.API.Services
             }
             _Context.categories.Remove(result);
             await _Context.SaveChangesAsync(cancellationToken);
+            var cacheKey = $"{_cachePerfix}_all";
+            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
+            cacheKey = $"{cacheKey}-{categoryId}";
+            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
 

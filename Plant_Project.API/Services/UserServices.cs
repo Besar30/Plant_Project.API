@@ -1,22 +1,29 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Plant_Project.API.Abstraction;
-using Plant_Project.API.contracts.Users;
-
+﻿
 namespace Plant_Project.API.Services
 {
-    public class UserServices (UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor) : IUserServices
+    public class UserServices (UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<UserServices> ilogger) : IUserServices
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IcacheService _icacheService = icacheService;
+        private readonly ILogger<UserServices> _ilogger = ilogger;
+
+        private const string _cachePerfix = "availableUser";
 
         public async Task<Result<UserProfileResponse>> GetProfileAsync(string UserId)
         {
-            var User = await _userManager.Users.Where(x => x.Id == UserId).
+            var cacheKey = $"{_cachePerfix}_all";
+            var User = await _icacheService.GetAsync<UserProfileResponse>(cacheKey);
+            if(User is not null)
+            {
+                _ilogger.LogInformation("cache get by cache");
+                return Result.Success(User);
+            }
+            _ilogger.LogInformation("cache get by Database");
+            User = await _userManager.Users.Where(x => x.Id == UserId).
                 ProjectToType<UserProfileResponse>().
                 SingleAsync();
+            await _icacheService.SetAsync(cacheKey, User);
             return Result.Success(User);
         }
 
@@ -50,6 +57,8 @@ namespace Plant_Project.API.Services
             }
 
             await _userManager.UpdateAsync(user);
+            var cacheKey = $"{_cachePerfix}_all";
+            await _icacheService.RemoveAsync(cacheKey);
 
             return Result.Success(user.Adapt<UserProfileResponse>());
         }

@@ -25,7 +25,6 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                 Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
         }
-        [Authorize(Roles =DefaultRoles.Member)]
         [HttpDelete("{CommentId}")]
         public async Task<IActionResult> DeleteComment([FromRoute]int CommentId,CancellationToken cancellationToken)
         {

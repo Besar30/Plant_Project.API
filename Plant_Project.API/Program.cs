@@ -4,6 +4,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependecies(builder.Configuration);
+builder.Services.AddDistributedMemoryCache();
 //database
 var ConnectionString = builder.Configuration.
     GetConnectionString("DefaultConnection");
