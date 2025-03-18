@@ -5,7 +5,7 @@ namespace Plant_Project.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class CartController(ICartServices cartServices) : ControllerBase
 {
 	private readonly ICartServices _cartServices = cartServices;
@@ -51,6 +51,4 @@ public class CartController(ICartServices cartServices) : ControllerBase
 
 		return result.IsSuccess ? NoContent() : result.ToProblem(StatusCodes.Status400BadRequest);
 	}
-
-
 }
