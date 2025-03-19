@@ -31,7 +31,7 @@ namespace Plant_Project.API.Services
                   p.Description,
                   p.How_To_Plant,
                   p.Quantity,
-                  p.ImagePath,
+               $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                   p.Is_Avilable,
                   p.Category != null ? p.Category.Name : "Unknown" // تجنب null
                 )).ToList();
@@ -48,14 +48,14 @@ namespace Plant_Project.API.Services
                 return Result.Failure(CategoryError.CategoryNotFound);
             }
             string imagePath = await SaveImageAsync(request.ImagePath);
-            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+           // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
 
             var plant = new Plant
             {
                 Name = request.Name,
                 Description = request.Description,
                 Price = request.Price,
-                ImagePath = absUri,
+                ImagePath = imagePath,
                 CategoryId = request.CategoryId,
                 How_To_Plant = request.How_To_Plant,
                 Quantity = request.Quantity
@@ -70,7 +70,6 @@ namespace Plant_Project.API.Services
             return Result.Success();
         }
 
-        
         public async Task<Result> UpdatePlantAsync(int Id,PlantsRequest request, CancellationToken cancellationToken = default)
         {
             var Plant = await _context.plants.Include(x=>x.Category).Where(x => x.Id == Id).FirstOrDefaultAsync(cancellationToken);
@@ -93,8 +92,8 @@ namespace Plant_Project.API.Services
 
                     // حفظ الصورة الجديدة
                     string newImagePath = await SaveImageAsync(request.ImagePath);
-                    var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{newImagePath}";
-                    Plant.ImagePath = absUri;
+                    // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{newImagePath}";
+                    Plant.ImagePath = newImagePath;
                 }
             }
             Plant.Name = request.Name;
@@ -135,7 +134,7 @@ namespace Plant_Project.API.Services
                    plant.Description,
                    plant.How_To_Plant,
                    plant.Quantity,
-                   plant.ImagePath,
+                  $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{plant.ImagePath}" ,
                    plant.Is_Avilable,
                    category!.Name
             );
@@ -168,7 +167,7 @@ namespace Plant_Project.API.Services
                    plant.Description,
                    plant.How_To_Plant,
                    plant.Quantity,
-                   plant.ImagePath,
+                  $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{plant.ImagePath}" ,
                    plant.Is_Avilable,
                    category!.Name
              );
@@ -189,7 +188,6 @@ namespace Plant_Project.API.Services
             cacheKey = $"{_cachePerfix}-{id}";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
-
         }
 
         private async Task<string> SaveImageAsync(IFormFile imageFile)

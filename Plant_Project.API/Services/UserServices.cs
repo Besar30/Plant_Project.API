@@ -7,9 +7,7 @@ namespace Plant_Project.API.Services
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<UserServices> _ilogger = ilogger;
-
         private const string _cachePerfix = "availableUser";
-
         public async Task<Result<UserProfileResponse>> GetProfileAsync(string UserId)
         {
             var cacheKey = $"{_cachePerfix}_all";
@@ -20,9 +18,15 @@ namespace Plant_Project.API.Services
                 return Result.Success(User);
             }
             _ilogger.LogInformation("cache get by Database");
-            User = await _userManager.Users.Where(x => x.Id == UserId).
-                ProjectToType<UserProfileResponse>().
-                SingleAsync();
+            var result = await _userManager.Users.Where(x=>x.Id == UserId).SingleAsync();
+            User = new UserProfileResponse(
+                result.UserName!,
+                result.Email!,
+                result.FirstName,
+                result.LastName,
+                 $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}",
+                result.PhoneNumber!
+                );
             await _icacheService.SetAsync(cacheKey, User);
             return Result.Success(User);
         }
@@ -47,8 +51,8 @@ namespace Plant_Project.API.Services
                 string imagePath = await SaveImageAsync(updateProfileRequest.ImagePath);
 
                 // حفظ المسار الكامل في قاعدة البيانات
-                var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
-                user.ImagePath = absUri;
+             //   var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+                user.ImagePath = imagePath;
             }
             else if (user.ImagePath != null && updateProfileRequest.ImagePath == null)
             {

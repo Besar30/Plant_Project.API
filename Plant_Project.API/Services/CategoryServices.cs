@@ -1,4 +1,5 @@
-﻿using Plant_Project.API.contracts.Categorys;
+﻿using Plant_Project.API.Abstraction;
+using Plant_Project.API.contracts.Categorys;
 using Plant_Project.API.contracts.Plants;
 namespace Plant_Project.API.Services
 {
@@ -27,7 +28,7 @@ namespace Plant_Project.API.Services
                     x.Id,
                     x.Name,
                     x.Description,
-                    x.ImagePath
+         $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}"
                     )).ToList();
 
                 await _icacheService.SetAsync(cacheKey, categoryRespons, cancellationToken);
@@ -57,7 +58,7 @@ namespace Plant_Project.API.Services
                     result.Id,
                     result.Name,
                     result.Description,
-                    result.ImagePath
+                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}"
                     );
                 await _icacheService.SetAsync(cacheKey,category, cancellation);
             return Result.Success(category);
@@ -69,12 +70,12 @@ namespace Plant_Project.API.Services
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
             string imagePath = await SaveImageAsync(request.ImagePath);
-            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+          //  var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
             var category = new Category
             {
                 Name = request.Name,
                 Description = request.Description,
-                ImagePath= absUri
+                ImagePath= imagePath
             };
             await _Context.AddAsync(category, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
@@ -93,11 +94,11 @@ namespace Plant_Project.API.Services
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
             string imagePath = await SaveImageAsync(request.ImagePath);
-            var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+           // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
 
             category.Description = request.Description;
             category.Name = request.Name;
-            category.ImagePath = absUri;
+            category.ImagePath = imagePath;
             await _Context.SaveChangesAsync(cancellationToken);
             var cacheKey = $"{_cachePerfix}_all";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
@@ -121,7 +122,7 @@ namespace Plant_Project.API.Services
               x.Description,
               x.How_To_Plant,
               x.Quantity,
-              x.ImagePath,
+      $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}",
               x.Is_Avilable,
               categoryName
           ))

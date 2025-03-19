@@ -24,12 +24,11 @@ namespace Plant_Project.API.Services
                             .Include(p => p.User)
                             .OrderByDescending(p => p.CreatedAt)
                             .ToListAsync(cancellationToken);
-
               result = posts.Select(p => new PostResponse
              (
                     p.Id,
                     p.Content,
-                    p.ImagePath,
+                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                     p.User.UserName!,
                     p.User.ImagePath
             )).ToList();
@@ -47,8 +46,8 @@ namespace Plant_Project.API.Services
             }
             if (post.ImagePath != null) {
                 string imagePath = await SaveImageAsync(post.ImagePath);
-                var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
-                Post.ImagePath=absUri;
+               // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
+                Post.ImagePath= imagePath;
             }
             if(post.Content!=null)
             Post.Content = post.Content;
@@ -78,14 +77,13 @@ namespace Plant_Project.API.Services
              response = new PostResponse(
                 post.Id,
                 post.Content,
-                post.ImagePath,
+               $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.ImagePath}",
                 post.User.UserName!,
                 post.User.ImagePath
             );
             await _icacheService.SetAsync(cacheKey, response);
             return Result.Success(response);
         }
-
         private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
