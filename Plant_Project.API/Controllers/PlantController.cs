@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.Abstraction.Consts;
 using Plant_Project.API.Authentication.Filters;
+using Plant_Project.API.contracts.Common;
 using Plant_Project.API.contracts.Plants;
 using Plant_Project.API.Services;
 namespace Plant_Project.API.Controllers
@@ -14,9 +15,9 @@ namespace Plant_Project.API.Controllers
         private readonly IplantServices _iplantServices = iplantServices;
         //https://localhost:7286/api/Plant
         [HttpGet("")]
-        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllAsync([FromQuery]RequestFilters filters,CancellationToken cancellationToken)
         {
-            var result=await _iplantServices.GetAllAsync(cancellationToken);
+            var result=await _iplantServices.GetAllAsync(filters,cancellationToken);
             return Ok(result);
         }
         //https://localhost:7286/api/Plant

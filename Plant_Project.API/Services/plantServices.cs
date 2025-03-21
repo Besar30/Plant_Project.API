@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Plant_Project.API.contracts.Common;
 using Plant_Project.API.contracts.Plants;
 using Plant_Project.API.Entities;
 
@@ -14,28 +15,24 @@ namespace Plant_Project.API.Services
         private readonly ILogger<plantServices> _logger = logger;
         private const string _cachePerfix = "availablePlant";
 
-        public async Task<Result<List<PlantsResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<PaginatedList<PlantsResponse>>> GetAllAsync(RequestFilters filters,CancellationToken cancellationToken = default)
         {
-            var cacheKey = $"{_cachePerfix}_all";
-            var response= await _icacheService.GetAsync<List<PlantsResponse>>(cacheKey,cancellationToken);
-            if (response is not null) {
-                _logger.LogInformation("Get By Cache");
-               return Result.Success(response);
-            }
-            _logger.LogInformation("Get By Database");
-            var result = await _context.plants.Include(p=>p.Category).ToListAsync(cancellationToken);
-             response = result.Select(p => new PlantsResponse(
-                   p.Id,
-                  p.Name,
-                  p.Price,
-                  p.Description,
-                  p.How_To_Plant,
-                  p.Quantity,
-               $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
-                  p.Is_Avilable,
-                  p.Category != null ? p.Category.Name : "Unknown" // تجنب null
-                )).ToList();
-            await _icacheService.SetAsync(cacheKey, response,cancellationToken);
+
+            var query = _context.plants
+                          .Include(p => p.Category) // تحميل العلاقة مع التصنيف
+                         .Select(p => new PlantsResponse(
+                             p.Id,
+                             p.Name,
+                             p.Price,
+                             p.Description,
+                             p.How_To_Plant,
+                             p.Quantity,
+                             $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
+                             p.Is_Avilable,
+                             p.Category != null ? p.Category.Name : "Unknown"
+                         ))
+                         .AsNoTracking();
+            var response = await PaginatedList<PlantsResponse>.CreateAsync(query.AsQueryable(),filters.PageNumber,filters.PageSize, cancellationToken);
             return Result.Success(response);
         }
 
@@ -48,8 +45,6 @@ namespace Plant_Project.API.Services
                 return Result.Failure(CategoryError.CategoryNotFound);
             }
             string imagePath = await SaveImageAsync(request.ImagePath);
-           // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
-
             var plant = new Plant
             {
                 Name = request.Name,
@@ -63,10 +58,6 @@ namespace Plant_Project.API.Services
             };
             await _context.plants.AddAsync(plant);
             await _context.SaveChangesAsync(cancellationToken);
-
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey,cancellationToken);
-          
             return Result.Success();
         }
 
@@ -104,9 +95,8 @@ namespace Plant_Project.API.Services
             Plant.CategoryId = request.CategoryId;
             await _context.SaveChangesAsync(cancellationToken);
 
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
-            cacheKey = $"{_cachePerfix}-{Id}";
+          
+            var cacheKey = $"{_cachePerfix}-{Id}";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
@@ -183,9 +173,7 @@ namespace Plant_Project.API.Services
              _context.plants.Remove(plant);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
-            cacheKey = $"{_cachePerfix}-{id}";
+            var cacheKey = $"{_cachePerfix}-{id}";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
