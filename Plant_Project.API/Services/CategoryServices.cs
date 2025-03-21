@@ -79,7 +79,7 @@ namespace Plant_Project.API.Services
             };
             await _Context.AddAsync(category, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
-            var cacheKey = $"{_cachePerfix}__all";
+            var cacheKey = $"{_cachePerfix}_all";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
