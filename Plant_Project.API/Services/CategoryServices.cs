@@ -1,5 +1,7 @@
-﻿using Plant_Project.API.Abstraction;
+﻿using Azure;
+using Plant_Project.API.Abstraction;
 using Plant_Project.API.contracts.Categorys;
+using Plant_Project.API.contracts.Common;
 using Plant_Project.API.contracts.Plants;
 namespace Plant_Project.API.Services
 {
@@ -10,31 +12,19 @@ namespace Plant_Project.API.Services
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<CategoryServices> _logger = logger;
         private const string _cachePerfix = "availableCategory";
-        public async Task<Result<List<CategoryResponse>>> GetAllCategoriesAsync(CancellationToken cancellationToken)
+        public async Task<Result<PaginatedList<CategoryResponse>>> GetAllCategoriesAsync(RequestFilters Filters,CancellationToken cancellationToken)
         {
-            var cacheKey = $"{_cachePerfix}_all";
-            var DataCache = await _icacheService.GetAsync<List<CategoryResponse>>(cacheKey, cancellationToken) ;
-            List<CategoryResponse> categoryRespons = [];
-            if (DataCache is not null)
-            {
-                _logger.LogInformation("Get By cache");
-                categoryRespons = DataCache;
-            }
-            else
-            {
-                _logger.LogInformation("Get By Database");
-                var result = await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
-                 categoryRespons = result.Select(x => new CategoryResponse(
-                    x.Id,
-                    x.Name,
-                    x.Description,
-         $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}"
-                    )).ToList();
-
-                await _icacheService.SetAsync(cacheKey, categoryRespons, cancellationToken);
-            }
-
-            return Result.Success(categoryRespons);
+            var result = await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
+            var query = _Context.categories
+                            .AsNoTracking()
+                            .Select(x => new CategoryResponse(
+                                x.Id,
+                                x.Name,
+                                x.Description,
+                                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}"
+                            ));
+           var responses = await PaginatedList<CategoryResponse>.CreateAsync(query.AsQueryable(), Filters.PageNumber, Filters.PageSize, cancellationToken);
+            return Result.Success(responses);
         }
         public async Task<Result<CategoryResponse>> GetCategoryByIdAsync(int Id, CancellationToken cancellation)
         {
@@ -70,7 +60,6 @@ namespace Plant_Project.API.Services
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
             string imagePath = await SaveImageAsync(request.ImagePath);
-          //  var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
             var category = new Category
             {
                 Name = request.Name,
@@ -79,8 +68,7 @@ namespace Plant_Project.API.Services
             };
             await _Context.AddAsync(category, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
+           
             return Result.Success();
         }
 
@@ -94,26 +82,23 @@ namespace Plant_Project.API.Services
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
             string imagePath = await SaveImageAsync(request.ImagePath);
-           // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
-
             category.Description = request.Description;
             category.Name = request.Name;
             category.ImagePath = imagePath;
             await _Context.SaveChangesAsync(cancellationToken);
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey, cancellationToken);
-            cacheKey = $"{cacheKey}-{categoryId}";
+       
+           var cacheKey = $"{_cachePerfix}-{categoryId}";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
             return Result.Success();
         }
-        public async Task<Result<List<PlantsResponse>>> GetAllPlantByCategoryName(string categoryName, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedList<PlantsResponse>>> GetAllPlantByCategoryName(string categoryName,RequestFilters filters, CancellationToken cancellationToken)
         {
             var category = await _Context.categories.Where(x => x.Name == categoryName).FirstOrDefaultAsync(cancellationToken);
             if(category == null)
             {
-                return Result.Failure<List<PlantsResponse>>(CategoryError.CategoryNotFound);
+                return Result.Failure<PaginatedList<PlantsResponse>>(CategoryError.CategoryNotFound);
             }
-            var plants = await _Context.plants
+            var Query =  _Context.plants
           .Where(x => x.CategoryId == category.Id)
           .Select(x => new PlantsResponse(
               x.Id,
@@ -125,8 +110,8 @@ namespace Plant_Project.API.Services
       $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}",
               x.Is_Avilable,
               categoryName
-          ))
-          .ToListAsync(cancellationToken);
+          ));
+          var plants=await PaginatedList< PlantsResponse >.CreateAsync(Query,filters.PageNumber,filters.PageSize,cancellationToken);
             return Result.Success(plants);
         }
         public async Task<Result> DeleteCategoryAsync(int categoryId, CancellationToken cancellationToken)

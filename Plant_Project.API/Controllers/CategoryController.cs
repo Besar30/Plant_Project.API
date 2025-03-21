@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.contracts.Categorys;
+using Plant_Project.API.contracts.Common;
 namespace Plant_Project.API.Controllers
 {
     [Route("[controller]")]
@@ -10,9 +11,9 @@ namespace Plant_Project.API.Controllers
         private readonly ICategoryServices _categoryServices = categoryServices;
         //https://localhost:7286/Category
         [HttpGet("")]
-        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllAsync([FromQuery] RequestFilters filters,CancellationToken cancellationToken)
         {
-            var result = await _categoryServices.GetAllCategoriesAsync(cancellationToken);
+            var result = await _categoryServices.GetAllCategoriesAsync(filters,cancellationToken);
             return Ok(result);
         }
         //https://localhost:7286/Category/Id
@@ -51,9 +52,9 @@ namespace Plant_Project.API.Controllers
                 Ok() : result.ToProblem(StatusCodes.Status404NotFound);
         }
         [HttpGet("{Name}/plantByCategoryName")]
-        public async Task<IActionResult> GetPlantsByCategoryName([FromRoute] string Name, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPlantsByCategoryName([FromRoute] string Name, [FromQuery] RequestFilters filters, CancellationToken cancellationToken)
         {
-            var result = await _categoryServices.GetAllPlantByCategoryName(Name, cancellationToken);
+            var result = await _categoryServices.GetAllPlantByCategoryName(Name,filters, cancellationToken);
 
             return result.IsSuccess ?
                 Ok(result) : result.ToProblem(StatusCodes.Status404NotFound);
