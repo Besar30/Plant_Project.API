@@ -54,7 +54,7 @@ namespace Plant_Project.API.Controllers
         }
         //https://localhost:7286/api/Plant/GetByName
         [HttpGet("GetByName")]
-        public async Task<IActionResult> GetByNameAsync([FromBody] string Name,CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByNameAsync([FromQuery] string Name,CancellationToken cancellationToken)
         {
             var result= await _iplantServices.GetByNameAsync(Name,cancellationToken);
             return result.IsSuccess ?
