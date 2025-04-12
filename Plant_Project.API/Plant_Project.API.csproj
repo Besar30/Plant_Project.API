@@ -27,6 +27,10 @@
   <ItemGroup>
     <Folder Include="persistence\Migrations\" />
     <Folder Include="wwwroot\Images\" />
+	  <Content Include="Templets\**">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  
+	  </Content>
   </ItemGroup>
 
 </Project>
