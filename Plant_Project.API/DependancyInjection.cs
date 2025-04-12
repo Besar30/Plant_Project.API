@@ -44,6 +44,7 @@ namespace Plant_Project.API
             services.AddValidationConfig();
             services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
             services.AddHttpContextAccessor();
+            services.AddHealthChecks();
             return services; 
         }
         public static IServiceCollection AddAddSwaggerServices(this IServiceCollection services){
