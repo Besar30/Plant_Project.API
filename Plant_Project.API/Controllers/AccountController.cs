@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.Extensions;
 namespace Plant_Project.API.Controllers
 {
@@ -34,6 +35,13 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                 NoContent() :
                 result.ToProblem(StatusCodes.Status400BadRequest);
+        }
+        [HttpGet("Posts")]
+        public async Task<IActionResult> UserPostAsync(CancellationToken cancellationToken)
+        {
+            var result= await _userServices.UserPost(User.GetUserId()!,cancellationToken);
+            return result.IsSuccess ?
+                   Ok(result.Value) :result.ToProblem(StatusCodes.Status400BadRequest);
         }
     }
 }
