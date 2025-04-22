@@ -1,8 +1,12 @@
 ﻿
+using Plant_Project.API.contracts.Posts;
+using System.Collections.Generic;
+
 namespace Plant_Project.API.Services
 {
-    public class UserServices (UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<UserServices> ilogger) : IUserServices
+    public class UserServices (ApplicationDbContext context,UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<UserServices> ilogger) : IUserServices
     {
+        private readonly ApplicationDbContext _context = context;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IcacheService _icacheService = icacheService;
@@ -104,6 +108,21 @@ namespace Plant_Project.API.Services
             }
         }
 
-     
+        public async Task<Result<List<PostResponse>>> UserPost(string UserId,CancellationToken cancellationToken)
+        {
+           
+            var userpost=await _context.Posts.Where(x=>x.UserId==UserId)
+                                        .OrderByDescending(p => p.CreatedAt)
+                                        .Include(p=>p.User)
+                                       .ToListAsync(cancellationToken);
+            var respons = userpost.Select(p => new PostResponse (
+                  p.Id,
+                  p.Content,
+                  $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
+                  p.User.UserName!,
+                 $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}"
+                )).ToList();
+            return Result.Success(respons);
+        }
     }
 }
