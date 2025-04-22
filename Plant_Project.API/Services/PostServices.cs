@@ -30,7 +30,7 @@ namespace Plant_Project.API.Services
                     p.Content,
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                     p.User.UserName!,
-                    p.User.ImagePath
+                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}"
             )).ToList();
 
             await _icacheService.SetAsync(_cachePerfix,result,cancellationToken);
