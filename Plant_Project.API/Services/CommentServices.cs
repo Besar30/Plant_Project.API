@@ -1,14 +1,17 @@
-﻿using Plant_Project.API.contracts;
+﻿using Microsoft.AspNetCore.SignalR;
+using Plant_Project.API.Const.SignalR;
+using Plant_Project.API.contracts;
 using Plant_Project.API.contracts.Comments;
 using Plant_Project.API.Entities;
 using System.Collections.Generic;
 namespace Plant_Project.API.Services
 {
-    public class CommentServices(ApplicationDbContext context,IcacheService icacheService,ILogger<CommentServices> logger):ICommentServices
+    public class CommentServices(ApplicationDbContext context,IcacheService icacheService,ILogger<CommentServices> logger, IHubContext<NotificationHub> notificationHub) :ICommentServices
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<CommentServices> _logger = logger;
+        private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
         private const string _cachePerfix = "availableComment";
 
         public async Task<Result> AddComment(CommentRequest commentRequest, string userId,CancellationToken cancellationToken)
@@ -27,8 +30,31 @@ namespace Plant_Project.API.Services
             await _context.SaveChangesAsync(cancellationToken);
             var cacheKey = $"{_cachePerfix}-{comment.PostId}";
             await _icacheService.RemoveAsync(cacheKey);
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Id == commentRequest.PostId, cancellationToken);
+            if (post != null) {
+              var ownerId=post.UserId;
+                string notificationMessage = $"{user.UserName} commented on your post: {commentRequest.Content}. ";
+                if (NotificationHub.userConnections.ContainsKey(ownerId)) {
+                   
+                    await _notificationHub.Clients.User(ownerId).SendAsync("ReceiveNotification", notificationMessage);
+
+                }
+                var notification = new Notification
+                {
+                    UserId = ownerId,
+                    Message = notificationMessage,
+                    IsRead = false,
+                    PostId=commentRequest.PostId,
+                    ImageUrl=user.ImagePath,
+                    UserName= user.UserName
+                };
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
             return Result.Success();
         }
+
+
         public async Task<Result<List<CommentResponse>>> GetCommentsByPost(int PostId)
         {
             var cacheKey = $"{_cachePerfix}-{PostId}";
@@ -53,6 +79,8 @@ namespace Plant_Project.API.Services
             await _icacheService.SetAsync(cacheKey, commentsResponse);
             return Result.Success(commentsResponse);
         }
+
+
         public async Task<Result> DeleteComment(int CommentId,string userId,CancellationToken cancellationToken)
         {
             var comment = await _context.Comments
