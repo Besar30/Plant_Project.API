@@ -6,5 +6,4 @@
         string UserName,
         string ImagePathUser
         );
-  
 }

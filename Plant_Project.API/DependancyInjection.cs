@@ -37,7 +37,7 @@ namespace Plant_Project.API
             services.AddScoped<ICartServices, CartServices>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<PayAuthService>();
-
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddAuthConfig(configuration);
             var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();
@@ -45,6 +45,7 @@ namespace Plant_Project.API
             services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
             services.AddHttpContextAccessor();
             services.AddHealthChecks();
+            services.AddSignalR();
             return services; 
         }
         public static IServiceCollection AddAddSwaggerServices(this IServiceCollection services){

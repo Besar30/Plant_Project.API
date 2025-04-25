@@ -36,6 +36,7 @@ namespace Plant_Project.API.Controllers
                 NoContent() :
                 result.ToProblem(StatusCodes.Status400BadRequest);
         }
+        //https://localhost:7286/me/Posts
         [HttpGet("Posts")]
         public async Task<IActionResult> UserPostAsync(CancellationToken cancellationToken)
         {

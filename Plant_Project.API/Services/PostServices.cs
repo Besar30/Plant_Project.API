@@ -1,4 +1,5 @@
-﻿using Plant_Project.API.contracts.Posts;
+﻿using Microsoft.AspNetCore.Mvc;
+using Plant_Project.API.contracts.Posts;
 using System.Collections.Generic;
 
 namespace Plant_Project.API.Services
@@ -37,7 +38,7 @@ namespace Plant_Project.API.Services
              return Result.Success(result);
         }
 
-        public async Task<Result> AddPost(PostRequestDTO post,string UserId, CancellationToken cancellationToken)
+        public async Task<Result> AddPost([FromForm] PostRequestDTO post,string UserId, CancellationToken cancellationToken)
         {
             var Post=new Post();
             if (post.Content == null && post.ImagePath == null)
