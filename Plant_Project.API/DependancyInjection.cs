@@ -24,6 +24,7 @@ namespace Plant_Project.API
             });
 
             services.AddAddSwaggerServices();
+
             services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IEmailSender,EmailService>();
             services.AddScoped<IJwtProvider, JwtProvider>();
@@ -39,7 +40,12 @@ namespace Plant_Project.API
             services.AddScoped<PayAuthService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddAuthConfig(configuration);
-            var config = TypeAdapterConfig.GlobalSettings;
+
+            services.AddSingleton<PlantDetectionMapper>();
+			services.AddScoped<IPlantDetectionService, PlantDetectionService>();
+			services.AddHttpClient<IPlantDetectionService, PlantDetectionService>();
+
+			var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();
             services.AddValidationConfig();
             services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
@@ -66,6 +72,7 @@ namespace Plant_Project.API
                 .AddDefaultTokenProviders();
 
             var JwtSetting = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+
             services.AddOptions<JwtOptions>()
                  .BindConfiguration(JwtOptions.SectionName)
                  .ValidateDataAnnotations()

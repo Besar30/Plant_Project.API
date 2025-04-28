@@ -26,12 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="persistence\Migrations\" />
     <Folder Include="wwwroot\Images\" />
 	  <Content Include="Templets\**">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		  
 	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="persistence\Migrations\**" />
+    <Content Remove="persistence\Migrations\**" />
+    <EmbeddedResource Remove="persistence\Migrations\**" />
+    <None Remove="persistence\Migrations\**" />
   </ItemGroup>
 
 </Project>

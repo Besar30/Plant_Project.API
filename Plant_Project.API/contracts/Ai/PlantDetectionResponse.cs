@@ -1,0 +1,23 @@
+﻿namespace Plant_Project.API.contracts.Ai
+{
+	public class PlantDetectionResponse
+	{
+		public string? ImageUrl { get; set; }   // optional: might be empty
+		public Prediction? Prediction { get; set; } // sometimes no prediction
+	}
+
+	public class Prediction
+	{
+		public string? Name { get; set; }
+		public string? Cause { get; set; }
+		public string? Cure { get; set; }
+	}
+
+	public record YourMappedResult
+	{
+		public string? PlantName { get; set; }
+		public bool HasDisease { get; set; }
+		public string? Disease { get; set; }
+		public string? Solution { get; set; }
+	}
+}

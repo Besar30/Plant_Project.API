@@ -1,7 +1,4 @@
-﻿using Plant_Project.API;
-using Plant_Project.API.Const.SignalR;
-using Serilog;
-
+﻿
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependecies(builder.Configuration);
@@ -17,7 +14,7 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+
 app.UseCors("AllowSpecificOrigins");
 if (app.Environment.IsDevelopment())
 {

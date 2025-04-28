@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Plant_Project.API.Errors
 {
