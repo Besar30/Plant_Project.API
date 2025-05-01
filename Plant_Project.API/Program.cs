@@ -1,4 +1,6 @@
 ﻿
+using Plant_Project.API.Const.SignalR;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependecies(builder.Configuration);
@@ -21,6 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.MapHub<NotificationHub>("/notificationHub");
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();

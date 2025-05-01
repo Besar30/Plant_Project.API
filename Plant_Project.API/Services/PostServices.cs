@@ -23,6 +23,7 @@ namespace Plant_Project.API.Services
             _logger.LogInformation("Get By Database");
             var posts = await _context.Posts
                             .Include(p => p.User)
+                            .Include(x=>x.Reacts)
                             .OrderByDescending(p => p.CreatedAt)
                             .ToListAsync(cancellationToken);
               result = posts.Select(p => new PostResponse
@@ -31,7 +32,8 @@ namespace Plant_Project.API.Services
                     p.Content,
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                     p.User.UserName!,
-                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}"
+                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
+                    p.Reacts.Count
             )).ToList();
 
             await _icacheService.SetAsync(_cachePerfix,result,cancellationToken);
@@ -71,6 +73,7 @@ namespace Plant_Project.API.Services
             _logger.LogInformation("Get By Database");
             var post = await _context.Posts
                         .Include(p => p.User) 
+                        .Include(x=>x.Reacts)
                         .FirstOrDefaultAsync(x => x.Id == Id);
 
             if (post == null)
@@ -80,7 +83,8 @@ namespace Plant_Project.API.Services
                 post.Content,
                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.ImagePath}",
                 post.User.UserName!,
-                post.User.ImagePath
+                post.User.ImagePath,
+                post.Reacts.Count
             );
             await _icacheService.SetAsync(cacheKey, response);
             return Result.Success(response);

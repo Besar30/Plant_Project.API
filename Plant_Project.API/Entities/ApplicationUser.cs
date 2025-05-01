@@ -12,6 +12,7 @@ namespace Plant_Project.API.Entities
 
         public List<Post> Posts { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
+        public List<React> Reacts { get; set; } = new();
 
 
 

@@ -5,7 +5,8 @@
         string Content,
         string ImagePath,
         string UserName,
-        string ImagePathUser
+        string ImagePathUser,
+        int ReactCount
         );
     
 }

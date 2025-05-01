@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250501125307_React")]
+    partial class React
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANT-PROJECT.COM",
                             NormalizedUserName = "ADMIN@PLANT-PROJECT.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBt32XAexaF6qfZxN0ktsBCmjIvmsBWMW5dXgwVsJbM1GUxgKMuZKXnSFJVeadHxRA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB6XBM9fVx/954iyDtW5R4sL1PmD9UJzz6nY2WM2IwJdjdYFVzqfScBh4YcSx2qEeA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
@@ -744,9 +747,6 @@ namespace Plant_Project.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("LikedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -759,7 +759,7 @@ namespace Plant_Project.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reacts");
+                    b.ToTable("React");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

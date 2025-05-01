@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250501131620_updatereact1")]
+    partial class updatereact1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANT-PROJECT.COM",
                             NormalizedUserName = "ADMIN@PLANT-PROJECT.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBt32XAexaF6qfZxN0ktsBCmjIvmsBWMW5dXgwVsJbM1GUxgKMuZKXnSFJVeadHxRA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB4gUXQ3B4rVTSruXOweO4E4yXzg7xJh7oYvauPDMJ9Epd+L5G/NSGTcPdHHvBg21g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
@@ -759,7 +762,7 @@ namespace Plant_Project.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reacts");
+                    b.ToTable("React");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

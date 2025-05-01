@@ -120,7 +120,8 @@ namespace Plant_Project.API.Services
                   p.Content,
                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                   p.User.UserName!,
-                 $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}"
+                 $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
+                 p.Reacts.Count()
                 )).ToList();
             return Result.Success(respons);
         }

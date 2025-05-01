@@ -39,6 +39,7 @@ namespace Plant_Project.API
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<PayAuthService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IReactServices, ReactServices>();
             services.AddAuthConfig(configuration);
 
             services.AddSingleton<PlantDetectionMapper>();

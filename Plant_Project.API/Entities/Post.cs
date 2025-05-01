@@ -14,6 +14,6 @@
         //comment
         public List<Comment> Comments { get; set; } = new();
 
-
+        public List<React> Reacts { get; set; } = new();
     }
 }
