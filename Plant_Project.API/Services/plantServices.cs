@@ -143,10 +143,8 @@ namespace Plant_Project.API.Services
                 return Result.Success(plantResponse);
 
             }
-
             _logger.LogInformation("Get By Database");
-
-            var plant = await _context.plants.Where(x=>x.Name==Name).FirstOrDefaultAsync(cancellationToken);
+            var plant = await _context.plants.Where(x => x.Name == Name).FirstOrDefaultAsync(cancellationToken);
             if (plant == null)
                 return Result.Failure<PlantsResponse>(PlantErrors.PlantNotFound);
             var category = await _context.categories.Where(x => x.Id == plant.CategoryId).FirstOrDefaultAsync(cancellationToken);

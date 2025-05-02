@@ -4,6 +4,7 @@ namespace Plant_Project.API.Services
 {
     public class ReactServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor) : IReactServices
     {
+
         private readonly ApplicationDbContext _context = context;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 

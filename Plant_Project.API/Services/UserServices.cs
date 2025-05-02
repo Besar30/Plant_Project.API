@@ -45,23 +45,17 @@ namespace Plant_Project.API.Services
             user.LastName = updateProfileRequest.LastName;
             user.PhoneNumber = updateProfileRequest.PhoneNumber;
 
+            // فقط لو تم إرسال صورة جديدة ومختلفة عن الصورة الحالية
             if (updateProfileRequest.ImagePath != null && updateProfileRequest.ImagePath.FileName != user.ImagePath)
             {
+                // حذف الصورة القديمة إن وجدت
                 if (!string.IsNullOrEmpty(user.ImagePath))
                 {
                     DeleteImage(user.ImagePath);
                 }
 
                 string imagePath = await SaveImageAsync(updateProfileRequest.ImagePath);
-
-                // حفظ المسار الكامل في قاعدة البيانات
-             //   var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{imagePath}";
                 user.ImagePath = imagePath;
-            }
-            else if (user.ImagePath != null && updateProfileRequest.ImagePath == null)
-            {
-                DeleteImage(user.ImagePath);
-                user.ImagePath = "";
             }
 
             await _userManager.UpdateAsync(user);
