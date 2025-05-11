@@ -51,7 +51,8 @@ namespace Plant_Project.API.Services
                     token,
                     expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
                     refreshToken,
-                    refreshTokenEXpirationDays
+                    refreshTokenEXpirationDays,
+                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
                 );
 
                 return Result.Success<AuthRespons>(resultt);
@@ -91,7 +92,8 @@ namespace Plant_Project.API.Services
                 Newtoken,
                 expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
                 RefreshToken,
-                refreshTokenEXpirationDays
+                refreshTokenEXpirationDays,
+                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
             );
             return Result.Success<AuthRespons>(resultt);
         }
@@ -153,7 +155,8 @@ namespace Plant_Project.API.Services
                     token,
                     expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
                     refreshToken,
-                    refreshTokenEXpirationDays
+                    refreshTokenEXpirationDays,
+                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
                 );
                 return Result.Success<AuthRespons>(resultt);
                 //var code= await _userManager.GenerateEmailConfirmationTokenAsync(user);
