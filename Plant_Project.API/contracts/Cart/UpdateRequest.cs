@@ -1,8 +1,7 @@
 ﻿namespace Plant_Project.API.contracts.Cart;
 
 public record UpdateRequest(
-	
-	int CartId,
-	int Quantity
-	
-	);
+    string UserId,
+    int ItemId,
+    int Quantity
+);
