@@ -71,7 +71,7 @@ public class CartServices(UserManager<ApplicationUser> userManager,
 
 	public async Task<Result> UpdateQuantityAsync(UpdateRequest request, CancellationToken cancellationToken)
 	{
-		var cartItem = await _context.Carts.FindAsync(request.CartId, cancellationToken);
+		var cartItem = await _context.Carts.FindAsync(request.ItemId, cancellationToken);
 		if (cartItem == null) return Result.Failure(CartErrors.ItemNotFound);
 
         cartItem.Quantity = request.Quantity;
