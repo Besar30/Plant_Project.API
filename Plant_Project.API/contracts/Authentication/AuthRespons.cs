@@ -8,6 +8,7 @@
         string Token,
         DateTimeOffset ExpirestIn,   // هنا نستخدم DateTimeOffset
         string RefreshToken,
-        DateTime RefreshTokenExpiration
+        DateTime RefreshTokenExpiration,
+        string imageUrl
     );
 }

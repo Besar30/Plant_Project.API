@@ -8,53 +8,47 @@ namespace Plant_Project.API.Controllers;
 [Authorize]
 public class CartController(ICartServices cartServices) : ControllerBase
 {
-	private readonly ICartServices _cartServices = cartServices;
+    private readonly ICartServices _cartServices = cartServices;
 
-	[HttpGet("{userId}")]
-	public async Task<IActionResult> GetAll([FromRoute] string userId, CancellationToken cancellationToken)
-	{
-		var result = await _cartServices.GetAllAsync(userId, cancellationToken);
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetAll([FromRoute] string userId, CancellationToken cancellationToken)
+    {
+        var result = await _cartServices.GetAllAsync(userId, cancellationToken);
 
-		if (!result.IsSuccess)
-			return result.ToProblem(400);
+		if (!result.IsSuccess || result.Value is null || result.Value.Count == 0)
+			return result.ToProblem(StatusCodes.Status404NotFound);
 
-		if (result.Value is null || result.Value.Count == 0)
-			return NotFound("Cart is empty.");
-
-		return Ok(result.Value);
+		return Ok(result.Value); 
 	}
-
 	[HttpPost("")]
 	public async Task<IActionResult> AddToCart([FromBody] CartRequest request, CancellationToken cancellationToken)
 	{
 		var result = await _cartServices.AddToCartAsync(request, cancellationToken);
 
-		return result.IsSuccess ? Ok() : result.ToProblem(400);
+		return result.IsSuccess ? Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
 	}
 
 	[HttpPut("")]
 	public async Task<IActionResult> UpdateCartItem([FromBody] UpdateRequest request, CancellationToken cancellationToken)
 	{
-		var result = await _cartServices.UpdateAsync(request, cancellationToken);
+		var result = await _cartServices.UpdateQuantityAsync(request, cancellationToken);
 
-		return result.IsSuccess ? NoContent() : result.ToProblem(404);
+		return result.IsSuccess ? NoContent() : result.ToProblem(StatusCodes.Status404NotFound);
 	}
 
-
-	[HttpDelete("{userId}/{ItemId}")]
-	public async Task<IActionResult> RemoveCartItem([FromRoute] string userId, [FromRoute] int ItemId, CancellationToken cancellationToken)
+	[HttpDelete("{cartId}")]
+	public async Task<IActionResult> RemoveCartItem([FromRoute] int cartId, CancellationToken cancellationToken)
 	{
-		var result = await _cartServices.DeleteAsync(userId, ItemId, cancellationToken);
+		var result = await _cartServices.DeleteAsync(cartId, cancellationToken);
 
-		return result.IsSuccess ? NoContent() : result.ToProblem(400);
+		return result.IsSuccess ? NoContent() : result.ToProblem(StatusCodes.Status404NotFound);
 	}
-
 
 	[HttpDelete("clear/{userId}")]
 	public async Task<IActionResult> ClearCart([FromRoute] string userId, CancellationToken cancellationToken)
 	{
 		var result = await _cartServices.ClearCartAsync(userId, cancellationToken);
 
-		return result.IsSuccess ? NoContent() : result.ToProblem(404);
+		return result.IsSuccess ? NoContent() : result.ToProblem(StatusCodes.Status400BadRequest);
 	}
 }
