@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.Authentication.Filters;
 using Plant_Project.API.contracts.Roles;
-using Plant_Project.API.Migrations;
 
 namespace Plant_Project.API.Controllers
 {

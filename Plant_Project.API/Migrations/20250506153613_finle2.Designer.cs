@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506153613_finle2")]
+    partial class finle2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANT-PROJECT.COM",
                             NormalizedUserName = "ADMIN@PLANT-PROJECT.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJW+KRYf7RrsQdZN8xVBuFLgk5cbkKKcHp+smgq+d432McHv4yeFti9P9+KGnkbhWw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKmjcktOkcQ0xUqLDwC1skeI69OEQyOgbYDXkNiKh8bqcmO5Te0sJJOwE4VD2WczxA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,

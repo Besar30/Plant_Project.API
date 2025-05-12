@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using Plant_Project.API.Extensions;
 namespace Plant_Project.API.Controllers
 {

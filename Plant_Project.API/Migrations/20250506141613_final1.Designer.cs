@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506141613_final1")]
+    partial class final1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANT-PROJECT.COM",
                             NormalizedUserName = "ADMIN@PLANT-PROJECT.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJW+KRYf7RrsQdZN8xVBuFLgk5cbkKKcHp+smgq+d432McHv4yeFti9P9+KGnkbhWw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOfgmU0PbM0LRCtrccTcEsIydnpHWRYboy70jp0s8Ly31ukHnn860BU0kX62FZwudQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
@@ -408,8 +411,7 @@ namespace Plant_Project.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlantId")
-                        .HasColumnType("int")
-                        .HasColumnName("ItemId");
+                        .HasColumnType("int");
 
                     b.Property<string>("PlantName")
                         .IsRequired()
@@ -418,6 +420,9 @@ namespace Plant_Project.API.Migrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");

@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Plant_Project.API.Abstraction.Consts;
-using Plant_Project.API.Authentication.Filters;
-using Plant_Project.API.contracts.Common;
-using Plant_Project.API.contracts.Plants;
-using Plant_Project.API.Services;
-namespace Plant_Project.API.Controllers
+﻿namespace Plant_Project.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

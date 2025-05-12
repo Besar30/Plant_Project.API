@@ -44,8 +44,13 @@ namespace Plant_Project.API.persistence
                 .HasForeignKey(c => c.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+			modelBuilder.Entity<Cart>()
+				.Property(c => c.PlantId)
+				.HasColumnName("ItemId");
+		
 
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
