@@ -6,12 +6,13 @@ using Plant_Project.API.Entities;
 using System.Collections.Generic;
 namespace Plant_Project.API.Services
 {
-    public class CommentServices(ApplicationDbContext context,IcacheService icacheService,ILogger<CommentServices> logger, IHubContext<NotificationHub> notificationHub) :ICommentServices
+    public class CommentServices(ApplicationDbContext context,IcacheService icacheService,ILogger<CommentServices> logger, IHubContext<NotificationHub> notificationHub, UserManager<ApplicationUser> userManager) :ICommentServices
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<CommentServices> _logger = logger;
         private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
         private const string _cachePerfix = "availableComment";
 
         public async Task<Result> AddComment(CommentRequest commentRequest, string userId,CancellationToken cancellationToken)
@@ -57,26 +58,18 @@ namespace Plant_Project.API.Services
 
         public async Task<Result<List<CommentResponse>>> GetCommentsByPost(int PostId)
         {
-            var cacheKey = $"{_cachePerfix}-{PostId}";
-            var commentsResponse = await _icacheService.GetAsync<List<CommentResponse>>(cacheKey);
-            if (commentsResponse is not null)
-            {
-                _logger.LogInformation("Get By cache");
-                return Result.Success(commentsResponse);
-            }
-            _logger.LogInformation("Get By Database");
+           
             var comments = await _context.Comments
                    .Where(x => x.PostId == PostId)
                    .Include(c => c.User) 
                    .OrderByDescending(c => c.CreatedAt)
                    .ToListAsync();
-             commentsResponse = comments.Select(c=>new CommentResponse(
+             var commentsResponse = comments.Select(c=>new CommentResponse(
                  c.Id,
                  c.Content,
                  c.User.UserName!,
                  c.User.ImagePath
                 )).ToList();
-            await _icacheService.SetAsync(cacheKey, commentsResponse);
             return Result.Success(commentsResponse);
         }
 
@@ -90,7 +83,9 @@ namespace Plant_Project.API.Services
             {
                 return Result.Failure(CommentErrors.CommentNotFound);
             }
-            if (comment.UserId == userId)
+            var user = await _context.Users.FindAsync(userId);
+            var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+            if (comment.UserId == userId||isAdmin)
             {
                 _context.Comments.Remove(comment);
                 await _context.SaveChangesAsync(cancellationToken);

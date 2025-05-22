@@ -36,5 +36,12 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess?
                 Ok(result):result.ToProblem(StatusCodes.Status400BadRequest);
         }
+        [HttpDelete("{PostId}")]
+        public async Task<IActionResult> Deletepost([FromRoute] int PostId)
+        {
+            var result = await _postServices.DeletePost(PostId, User.GetUserId()!);
+            return result.IsSuccess ?
+                Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
+        }
     }
 }

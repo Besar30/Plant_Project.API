@@ -4,12 +4,14 @@ using System.Collections.Generic;
 
 namespace Plant_Project.API.Services
 {
-    public class PostServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<PostServices> logger) : IPostServices
+    public class PostServices (ApplicationDbContext context, IHttpContextAccessor httpContextAccessor,IcacheService icacheService,ILogger<PostServices> logger, UserManager<ApplicationUser> userManager) : IPostServices
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<PostServices> _logger = logger;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+
         private const string _cachePerfix = "availablePost";
 
         public async Task<Result<List<PostResponse>>> GetAll(CancellationToken cancellationToken)
@@ -103,6 +105,29 @@ namespace Plant_Project.API.Services
                 await imageFile.CopyToAsync(fileStream);
             }
             return "/images/" + uniqueFileName;
+        }
+
+        public async Task<Result> DeletePost(int PostId, string UserId)
+        {
+            var post = await _context.Posts
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(x => x.Id == PostId);
+            if (post == null)
+            {
+                return Result.Failure(PostErrors.PostNotFound);
+            }
+            var Id = post.User.Id;
+            var user = await _context.Users.FindAsync(UserId);
+            var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+
+            if (Id == UserId || isAdmin)
+            {
+                _context.Remove(post);
+                await _context.SaveChangesAsync();
+                return Result.Success();
+            }
+
+            return Result.Failure(PostErrors.PostCanNotBeDeleted);
         }
     }
 }

@@ -7,5 +7,9 @@
 
         public static readonly Error PostNotFound =
         new Error("Post Not Found", "Post Not Found");
+        public static readonly Error PostCanNotBeDeleted =
+    new Error("PostDeletionFailed", "Only the post owner or an admin is authorized to delete this post.");
+
+
     }
 }
