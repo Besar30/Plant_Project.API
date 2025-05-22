@@ -43,5 +43,21 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                    Ok(result.Value) :result.ToProblem(StatusCodes.Status400BadRequest);
         }
+        [Authorize(Roles = DefaultRoles.Admin)]
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _userServices.GetAllUser(User.GetUserId()!);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = DefaultRoles.Admin)]
+        [HttpDelete("{UserId}")]
+        public async Task<IActionResult> DeleteUser([FromRoute]string UserId)
+        {
+            var result= await _userServices.DeleteUser(UserId);
+            return result.IsSuccess ?
+                Ok() : result.ToProblem(StatusCodes.Status400BadRequest);
+        }
     }
 }

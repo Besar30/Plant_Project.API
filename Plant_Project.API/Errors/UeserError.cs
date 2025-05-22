@@ -32,6 +32,8 @@ namespace Plant_Project.API.Errors
 
         public static readonly Error UserNotFound =
         new("User.UserNotFound", "User is not found");
+        public static readonly Error UserIsAdmin =
+       new("User.UserIsAdmin", "You Cant delete this email");
     }
 }
 

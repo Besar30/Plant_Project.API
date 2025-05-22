@@ -119,5 +119,33 @@ namespace Plant_Project.API.Services
                 )).ToList();
             return Result.Success(respons);
         }
+
+        public async Task<Result<List<UsersResponse>>> GetAllUser(string UserId)
+        {
+            var Users = await _context.Users.Where(x => x.Id != UserId).ToListAsync();
+            var response = Users.Select(p => new UsersResponse(
+                p.Id,
+                p.Email!,
+                p.UserName!,
+                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}"
+                )).ToList();
+            return Result.Success(response);
+        }
+
+        public async Task<Result> DeleteUser(string UserId)
+        {
+            var user = await _context.Users.FindAsync(UserId);
+            if(user == null)
+            {
+                return Result.Failure(UeserError.UserNotFound);
+            }
+            var isAdmin = await _userManager.IsInRoleAsync(user!, "Admin");
+            if (isAdmin) {
+                return Result.Failure(UeserError.UserIsAdmin);
+            }
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return Result.Success();
+        }
     }
 }
