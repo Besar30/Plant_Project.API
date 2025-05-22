@@ -31,7 +31,7 @@
 
 			try
 			{
-				var response = await _httpClient.PostAsync("https://plant-disease-detection-system-gr3i.onrender.com/api/predict", content, cancellationToken);
+				var response = await _httpClient.PostAsync("https://plant-disease-v2.onrender.com/api/predict", content, cancellationToken);
 
 				if (!response.IsSuccessStatusCode)
 				{

@@ -69,13 +69,10 @@ public class CartServices(UserManager<ApplicationUser> userManager,
         return Result.Success();
     }
 
-    public async Task<Result> UpdateAsync(UpdateRequest request, CancellationToken cancellationToken)
-    {
-        var cartItem = await _context.Carts
-            .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.PlantId == request.ItemId, cancellationToken);
-
-        if (cartItem == null)
-            return Result.Failure(CartErrors.ItemNotFound);
+	public async Task<Result> UpdateQuantityAsync(UpdateRequest request, CancellationToken cancellationToken)
+	{
+		var cartItem = await _context.Carts.FindAsync(request.ItemId, cancellationToken);
+		if (cartItem == null) return Result.Failure(CartErrors.ItemNotFound);
 
         cartItem.Quantity = request.Quantity;
         await _context.SaveChangesAsync(cancellationToken);
@@ -83,26 +80,24 @@ public class CartServices(UserManager<ApplicationUser> userManager,
         return Result.Success();
     }
 
-
-    public async Task<Result> DeleteAsync(string userId, int plantId, CancellationToken cancellationToken)
-    {
-        var cartItem = await _context.Carts
-            .FirstOrDefaultAsync(c => c.UserId == userId && c.PlantId == plantId, cancellationToken);
+	public async Task<Result> DeleteAsync(int cartId, CancellationToken cancellationToken)
+	{
+		var cartItem = await _context.Carts.FindAsync(cartId);
 
         if (cartItem == null)
             return Result.Failure(CartErrors.ItemNotFound);
 
-        _context.Carts.Remove(cartItem);
-        await _context.SaveChangesAsync(cancellationToken);
+		_context.Carts.Remove(cartItem);
+
+		await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
 
-
-    public async Task<Result> ClearCartAsync(string userId, CancellationToken cancellationToken)
-    {
-        var cartItems = await _context.Carts.Where(c => c.UserId == userId).ToListAsync(cancellationToken);
-        if (cartItems.Count == 0) return Result.Failure(CartErrors.CartEmpty);
+	public async Task<Result> ClearCartAsync(string userId, CancellationToken cancellationToken)
+	{
+		var cartItems = await _context.Carts.Where(c => c.UserId == userId).ToListAsync(cancellationToken);
+		if (cartItems.Count == 0) return Result.Failure(CartErrors.CartEmpty);
 
         _context.Carts.RemoveRange(cartItems);
         await _context.SaveChangesAsync(cancellationToken);

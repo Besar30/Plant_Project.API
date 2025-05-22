@@ -26,3 +26,5 @@ global using Plant_Project.API.Services;
 global using Plant_Project.API.Settings;
 global using Plant_Project.API.Abstraction.Consts;
 global using Plant_Project.API.contracts.Ai;
+global using Plant_Project.API.contracts.Common;
+global using Plant_Project.API.contracts.Plants;
