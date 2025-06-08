@@ -10,19 +10,18 @@
 
 			var prediction = response.Prediction;
 
-			// Handle cases where the AI model detects something irrelevant (like background without leaves)
 			if (string.IsNullOrEmpty(prediction.Name) || prediction.Name.Contains("Background_without_leaves"))
 			{
 				return new YourMappedResult
 				{
-					PlantName = "Unknown Plant",  // Default to "Unknown Plant" when no valid plant is detected
-					HasDisease = false,           // Assume no disease if no valid plant detected
+					PlantName = "Unknown Plant", 
+					HasDisease = false,           
 					Disease = "No plant detected in the image.",
-					Solution = "Try using a clearer image with a visible plant."
+					Solution = "Try using a clearer image with a visible plant.",
+					Accuracy = prediction.Accuracy ?? 0f
 				};
 			}
 
-			// Handle cases where the disease or plant name is not detected
 			if (string.IsNullOrEmpty(prediction.Cause))
 			{
 				return new YourMappedResult
@@ -30,7 +29,8 @@
 					PlantName = prediction.Name ?? "Unknown Plant",
 					HasDisease = false,
 					Disease = "No disease detected.",
-					Solution = "No solution available."
+					Solution = "No solution available.",
+					Accuracy = prediction.Accuracy ?? 0f
 				};
 			}
 
@@ -39,7 +39,9 @@
 				PlantName = prediction.Name ?? "Unknown Plant",
 				HasDisease = !string.IsNullOrEmpty(prediction.Cause),  // If there's no cause, we assume no disease
 				Disease = prediction.Cause ?? "No disease detected.",
-				Solution = prediction.Cure ?? "No solution available."
+				Solution = prediction.Cure ?? "No solution available.",
+				Accuracy = prediction.Accuracy ?? 0f
+
 			};
 		}
 	}

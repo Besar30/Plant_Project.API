@@ -4,7 +4,7 @@
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ILogger<PlantDetectionService> _logger;
-		private readonly PlantDetectionMapper _mapper; // Injecting the mapper
+		private readonly PlantDetectionMapper _mapper; 
 
 		public PlantDetectionService(HttpClient httpClient, ILogger<PlantDetectionService> logger, PlantDetectionMapper mapper)
 		{
@@ -23,10 +23,8 @@
 			using var fileStream = file.OpenReadStream();
 			var streamContent = new StreamContent(fileStream);
 
-			// Set Content-Type properly (image/jpeg, image/png, etc.)
 			streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
-			// The AI model expects field name = "img"
 			content.Add(streamContent, "img", file.FileName);
 
 			try
@@ -51,7 +49,6 @@
 					throw new Exception("Unable to detect the plant or disease. Please try another image.");
 				}
 
-				// Map the response into YourMappedResult
 				var result = _mapper.Map(plantDetectionResponse);
 
 				return result;

@@ -46,6 +46,8 @@ namespace Plant_Project.API
 			services.AddScoped<IPlantDetectionService, PlantDetectionService>();
 			services.AddHttpClient<IPlantDetectionService, PlantDetectionService>();
 
+			//services.AddHttpClient<TranslationService>();
+
 			var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();
             services.AddValidationConfig();

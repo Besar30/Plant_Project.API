@@ -41,6 +41,13 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 		_context.Orders.Add(order);
 		await _context.SaveChangesAsync(cancellationToken);
 
+		if (request.PaymentMethod == "Cash")
+		{
+			_context.Carts.RemoveRange(cartItems);
+			await _context.SaveChangesAsync(cancellationToken);
+			return Result.Success();
+		}
+
 		if (request.PaymentMethod != "Cash")
 		{
 			// Ensure card details are provided
@@ -67,13 +74,12 @@ public class PaymentService(UserManager<ApplicationUser> userManager,
 			await _context.SaveChangesAsync(cancellationToken);
 
 
-			// ✅ Save Payment Record
 			var payment = new Payment
 			{
 				UserId = request.UserId,
 				OrderId = order.Id,
 				Amount = order.TotalAmount,
-				Currency = "USD", // Default currency
+				Currency = "USD", 
 				PaymentIntentId = order.TransactionId ?? string.Empty,
 				Status = "Succeeded",
 				CreatedAt = DateTime.UtcNow
