@@ -16,10 +16,10 @@ namespace Plant_Project.API
             {
                 options.AddPolicy("AllowSpecificOrigins", builder =>
                 {
-                    builder.WithOrigins(allowedOrigins!) // ✅ Allow only defined origins
+                    builder.WithOrigins(allowedOrigins!) 
                            .AllowAnyHeader()
                            .AllowAnyMethod()
-                           .AllowCredentials(); // ✅ Allow credentials like cookies/tokens
+                           .AllowCredentials(); 
                 });
             });
 
@@ -33,7 +33,8 @@ namespace Plant_Project.API
             services.AddScoped<IplantServices,plantServices>();
             services.AddScoped<IRoleServices, RoleServices>();
             services.AddScoped<IPostServices, PostServices>();
-            services.AddScoped<ICommentServices, CommentServices>();
+            services.AddScoped<IOrderService, OrderService>();
+			services.AddScoped<ICommentServices, CommentServices>();
             services.AddScoped<IcacheService,cacheService>();
             services.AddScoped<ICartServices, CartServices>();
             services.AddScoped<IPaymentService, PaymentService>();
@@ -62,7 +63,6 @@ namespace Plant_Project.API
             services.AddSwaggerGen();
             return services;
         }
-        //sdcnsdnc 
         public static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));

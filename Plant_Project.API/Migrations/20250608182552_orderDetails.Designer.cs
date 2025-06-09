@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plant_Project.API.persistence;
 
@@ -11,9 +12,11 @@ using Plant_Project.API.persistence;
 namespace Plant_Project.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250608182552_orderDetails")]
+    partial class orderDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,7 +390,7 @@ namespace Plant_Project.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@PLANT-PROJECT.COM",
                             NormalizedUserName = "ADMIN@PLANT-PROJECT.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMh9L/b88C+mv4HDBUufmj+Wock8ZN0fiMwaRK3sTaUF11Vnl8u0cK1AQLXPAzvWnQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFAyTeUFWuKuiOWJ3Jh5LB3nP+EjnRAvV6mMzWezijB5nplOiEreTkq/qjEzyCNiRQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "55BF92C9EF0249CDA210D85D1A851BC9",
                             TwoFactorEnabled = false,
@@ -547,6 +550,9 @@ namespace Plant_Project.API.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -563,7 +569,6 @@ namespace Plant_Project.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -916,8 +921,7 @@ namespace Plant_Project.API.Migrations
                     b.HasOne("Plant_Project.API.Entities.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });

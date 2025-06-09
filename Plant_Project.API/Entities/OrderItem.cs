@@ -4,7 +4,10 @@
     {
         public int Id { get; set; } // Primary Key
 
-        public int OrderId { get; set; } // Foreign Key to Order
+		public string? UserId { get; set; } // Foreign Key from AspNetUsers
+		public ApplicationUser? User { get; set; }
+
+		public int OrderId { get; set; } // Foreign Key to Order
         public Order? Order { get; set; }
 
         public int PlantId { get; set; } // Foreign Key to Plant
@@ -18,5 +21,6 @@
         public decimal Price { get; set; } // Price per unit
 
         public decimal TotalPrice => Price * Quantity; // Total price for this plant
+
     }
 }

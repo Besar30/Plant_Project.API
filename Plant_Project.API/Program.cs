@@ -16,7 +16,15 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 
 var app = builder.Build();
-
+if (app.Environment.IsDevelopment())
+{
+	app.UseDeveloperExceptionPage();
+}
+else
+{
+	app.UseExceptionHandler("/error");
+	app.UseHsts();
+}
 app.UseCors("AllowSpecificOrigins");
 if (app.Environment.IsDevelopment())
 {
@@ -26,6 +34,8 @@ if (app.Environment.IsDevelopment())
 app.MapHub<NotificationHub>("/notificationHub");
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();

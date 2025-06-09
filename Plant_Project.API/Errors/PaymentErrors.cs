@@ -5,6 +5,9 @@ public class PaymentErrors
 	public static readonly Error PaymentFailer =
 		new("User.PaymentFailer","Fail transaction method");
 
+	public static readonly Error InternalError=
+		new("User.InternalError", "Fail transaction method");
+
 	public static readonly Error MissingCardDetails =
 		new("User.MissingCardDetails", "Missing Card Details");
 	
@@ -12,7 +15,7 @@ public class PaymentErrors
 		new("User.PaymentMethodRequaird", "Payment Method Requaird");
 	
 	public static readonly Error InValidCardNumber =
-		new("User.IsValidCardNumber", "Invalid card number");
+		new("User.InValidCardNumber", "Invalid card number");
 
 	public static readonly Error InValidCVV =
 		new("User.IsValidCVV", "Invalid cvv number");

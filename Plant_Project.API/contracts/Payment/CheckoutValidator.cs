@@ -51,12 +51,16 @@ public static class CheckoutValidator
 
 	public static bool IsValidCVV(string cvv, string cardType)
 	{
-		return cardType switch
+		if (string.IsNullOrWhiteSpace(cvv) || string.IsNullOrWhiteSpace(cardType))
+			return false;
+
+		return cardType.ToLowerInvariant() switch
 		{
-			"Amex" => Regex.IsMatch(cvv, "^[0-9]{4}$"),
-			"Visa" or "MasterCard" or "Discover" => Regex.IsMatch(cvv, "^[0-9]{3}$"),
+			"amex" or "americanexpress" => Regex.IsMatch(cvv, @"^\d{4}$"),
+			"visa" or "mastercard" or "discover" => Regex.IsMatch(cvv, @"^\d{3}$"),
 			_ => false
 		};
 	}
+
 }
 

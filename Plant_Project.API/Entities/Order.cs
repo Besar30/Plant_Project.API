@@ -4,8 +4,8 @@
     {
         public int Id { get; set; } // Primary Key
 
-        public string? UserId { get; set; } // Foreign Key from AspNetUsers
-        public ApplicationUser? User { get; set; }
+        public string UserId { get; set; } = string.Empty;// Foreign Key from AspNetUsers
+		public ApplicationUser? User { get; set; }
 
         [Precision(18, 2)]
         public decimal TotalAmount { get; set; } // Total cost of the order
