@@ -14,26 +14,26 @@ namespace Plant_Project.API.Services
         private const string _cachePerfix = "availableUser";
         public async Task<Result<UserProfileResponse>> GetProfileAsync(string UserId)
         {
-            var cacheKey = $"{_cachePerfix}_all";
-            var User = await _icacheService.GetAsync<UserProfileResponse>(cacheKey);
-            if(User is not null)
-            {
-                _ilogger.LogInformation("cache get by cache");
-                return Result.Success(User);
-            }
-            _ilogger.LogInformation("cache get by Database");
-            var result = await _userManager.Users.Where(x=>x.Id == UserId).SingleAsync();
-            User = new UserProfileResponse(
+
+            var result = await _userManager.Users
+                .Where(x => x.Id == UserId)
+                .SingleOrDefaultAsync();
+
+            if (result == null)
+                return Result.Failure<UserProfileResponse>(UeserError.EmailNotFound);
+
+            var userProfile = new UserProfileResponse(
                 result.UserName!,
                 result.Email!,
                 result.FirstName,
                 result.LastName,
-                 $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}",
+                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}",
                 result.PhoneNumber!
-                );
-            await _icacheService.SetAsync(cacheKey, User);
-            return Result.Success(User);
+            );
+
+            return Result.Success(userProfile);
         }
+
 
         public async Task<Result> UpdateProfileAsync(string UserId, UpdateProfileRequest updateProfileRequest)
         {
@@ -59,8 +59,7 @@ namespace Plant_Project.API.Services
             }
 
             await _userManager.UpdateAsync(user);
-            var cacheKey = $"{_cachePerfix}_all";
-            await _icacheService.RemoveAsync(cacheKey);
+          
 
             return Result.Success(user.Adapt<UserProfileResponse>());
         }
