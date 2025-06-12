@@ -43,7 +43,9 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess ?
                    Ok(result.Value) :result.ToProblem(StatusCodes.Status400BadRequest);
         }
-        [Authorize(Roles = DefaultRoles.Admin)]
+
+		//https://localhost:7286/me/GetAll
+		[Authorize(Roles = DefaultRoles.Admin)]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
