@@ -40,7 +40,13 @@ namespace Plant_Project.API.Controllers
 
             return result.ToProblem(StatusCodes.Status404NotFound);
         }
-
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            
+            Response.Cookies.Delete("accessToken");
+            return Ok(new { message = "Logged out successfully" });
+        }
         //https://localhost:7286/Auth/Refresh
 
         [HttpPost("Refresh")]
