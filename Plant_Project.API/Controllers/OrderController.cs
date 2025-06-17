@@ -4,7 +4,7 @@ using global::Plant_Project.API.contracts.Order;
 using Microsoft.AspNetCore.Mvc;
 
 
-
+[Authorize]
 [ApiController]
 [Route("order")]
 public class OrderController(IOrderService orderService) : ControllerBase
@@ -19,5 +19,13 @@ public class OrderController(IOrderService orderService) : ControllerBase
 			? Ok(result.Value)
 			: result.ToProblem(StatusCodes.Status404NotFound);
 	}
+
+	[HttpGet("user/{userId}")]
+	public async Task<IActionResult> GetAllOrdersForUser(string userId, CancellationToken cancellationToken)
+	{
+		var orders = await _orderService.GetAllOrdersByUserAsync(userId, cancellationToken);
+		return Ok(orders);
+	}
+
 }
 

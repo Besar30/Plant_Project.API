@@ -46,4 +46,33 @@ public class OrderService : IOrderService
 		return Result.Success(responseList);
 	}
 
+	public async Task<List<OrderResponse>> GetAllOrdersByUserAsync(string userId, CancellationToken cancellationToken)
+	{
+		var orders = await _context.Orders
+			.Where(o => o.UserId == userId)
+			.Include(o => o.OrderItems)
+			.ToListAsync(cancellationToken);
+
+		var response = new List<OrderResponse>();
+
+		foreach (var order in orders)
+		{
+			foreach (var item in order.OrderItems)
+			{
+				response.Add(new OrderResponse(
+					UserId: order.UserId,
+					OrderId: order.Id,
+					PlantName: item.PlantName,
+					Address: order.Address,
+					PaymentMethod: order.PaymentMethod,
+					TotalAmount: order.TotalAmount,
+					OrderDate: order.OrderDate,
+					PaymentStatus: order.PaymentStatus
+				));
+			}
+		}
+
+		return response;
+	}
+
 }
