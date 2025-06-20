@@ -20,8 +20,11 @@ namespace Plant_Project.API.contracts.Plants
                 WithMessage("Quantity Must Greater Than 0");
             RuleFor(p => p.CategoryId)
            .GreaterThan(0).WithMessage("Category Id Must Greater Than 0");
-            RuleFor(x => x.ImagePath).NotNull();
-            RuleFor(x => x.ImagePath).Must(BeAValidImage).WithMessage("File Allowed Extention{.jpg,.jpeg, .png}");
+            //   RuleFor(x => x.ImagePath).NotNull();
+            RuleFor(x => x.ImagePath)
+                          .Must(BeAValidImage)
+                          .When(x => x.ImagePath != null)
+                          .WithMessage("File Allowed Extention{.jpg,.jpeg, .png}");
         }
         private bool BeAValidImage(IFormFile file)
         {

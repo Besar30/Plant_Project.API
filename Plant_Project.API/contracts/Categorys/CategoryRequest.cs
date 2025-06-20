@@ -3,6 +3,6 @@
     public record CategoryRequest(
          string Name,
          string Description,
-         IFormFile ImagePath
+         IFormFile? ImagePath
         );
 }
