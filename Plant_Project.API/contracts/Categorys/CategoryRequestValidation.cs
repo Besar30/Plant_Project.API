@@ -17,7 +17,10 @@ namespace Plant_Project.API.contracts.Categorys
             RuleFor(x=>x.Description).NotNull();
             RuleFor(x=>x.Description).NotEmpty()
                 .Length(3, 2000);
-            RuleFor(x=>x.ImagePath).Must(BeAValidImage).WithMessage("File Allowed Extention{.jpg,.jpeg, .png}");
+            RuleFor(x => x.ImagePath)
+                .Must(BeAValidImage)
+                .When(x => x.ImagePath != null)
+                .WithMessage("File Allowed Extention{.jpg,.jpeg, .png}");
         }
 
         private bool BeAValidImage(IFormFile file)

@@ -7,7 +7,7 @@
         string How_To_Plant,
         int Quantity,
         int CategoryId,
-        IFormFile ImagePath
+        IFormFile? ImagePath
         );
 
 }

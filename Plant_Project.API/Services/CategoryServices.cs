@@ -72,25 +72,41 @@ namespace Plant_Project.API.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateCategoryAsync(int categoryId,CategoryRequest request, CancellationToken cancellationToken)
+        public async Task<Result> UpdateCategoryAsync(int categoryId, CategoryRequest request, CancellationToken cancellationToken)
         {
-            var category = await _Context.categories.Where(x => x.Id == categoryId).FirstOrDefaultAsync(cancellationToken);
-            if (category == null) {
+            var category = await _Context.categories
+                .Where(x => x.Id == categoryId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (category == null)
+            {
                 return Result.Failure(CategoryError.CategoryNotFound);
             }
-            var result = await _Context.categories.AnyAsync(x => x.Name == request.Name && x.Id!=categoryId, cancellationToken);
-            if (result)
+
+            var isDuplicate = await _Context.categories
+                .AnyAsync(x => x.Name == request.Name && x.Id != categoryId, cancellationToken);
+
+            if (isDuplicate)
                 return Result.Failure(CategoryError.CategoryDublicated);
-            string imagePath = await SaveImageAsync(request.ImagePath);
+
+            // ✅ الصح إننا نفحص الـ request.ImagePath مش القديمة
+            if (request.ImagePath != null)
+            {
+                string imagePath = await SaveImageAsync(request.ImagePath);
+                category.ImagePath = imagePath;
+            }
+
             category.Description = request.Description;
             category.Name = request.Name;
-            category.ImagePath = imagePath;
+
             await _Context.SaveChangesAsync(cancellationToken);
-       
-           var cacheKey = $"{_cachePerfix}-{categoryId}";
+
+            var cacheKey = $"{_cachePerfix}-{categoryId}";
             await _icacheService.RemoveAsync(cacheKey, cancellationToken);
+
             return Result.Success();
         }
+
         public async Task<Result<PaginatedList<PlantsResponse>>> GetAllPlantByCategoryName(string categoryName,RequestFilters filters, CancellationToken cancellationToken)
         {
             var category = await _Context.categories.Where(x => x.Name == categoryName).FirstOrDefaultAsync(cancellationToken);
