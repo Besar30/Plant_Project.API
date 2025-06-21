@@ -6,7 +6,9 @@
         string ImagePath,
         string UserName,
         string ImagePathUser,
-        int ReactCount
+        int ReactCount,
+        string Time,
+        int countComment
         );
     
 }

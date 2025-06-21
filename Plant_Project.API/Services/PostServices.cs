@@ -26,6 +26,7 @@ namespace Plant_Project.API.Services
             var posts = await _context.Posts
                             .Include(p => p.User)
                             .Include(x=>x.Reacts)
+                            .Include(x=>x.Comments)
                             .OrderByDescending(p => p.CreatedAt)
                             .ToListAsync(cancellationToken);
               result = posts.Select(p => new PostResponse
@@ -35,7 +36,10 @@ namespace Plant_Project.API.Services
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                     p.User.UserName!,
                     $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
-                    p.Reacts.Count
+                    p.Reacts.Count,
+                    FormatDateFacebookStyle(p.CreatedAt),
+                    p.Comments.Count
+
             )).ToList();
 
             await _icacheService.SetAsync(_cachePerfix,result,cancellationToken);
@@ -76,6 +80,7 @@ namespace Plant_Project.API.Services
             var post = await _context.Posts
                         .Include(p => p.User) 
                         .Include(x=>x.Reacts)
+                        .Include(x=>x.Comments)
                         .FirstOrDefaultAsync(x => x.Id == Id);
 
             if (post == null)
@@ -86,7 +91,10 @@ namespace Plant_Project.API.Services
                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.ImagePath}",
                 post.User.UserName!,
                 post.User.ImagePath,
-                post.Reacts.Count
+                post.Reacts.Count,
+                FormatDateFacebookStyle(post.CreatedAt),
+                post.Comments.Count
+
             );
             await _icacheService.SetAsync(cacheKey, response);
             return Result.Success(response);
@@ -129,5 +137,31 @@ namespace Plant_Project.API.Services
 
             return Result.Failure(PostErrors.PostCanNotBeDeleted);
         }
+        public static string FormatDateFacebookStyle(DateTime utcDateTime)
+        {
+            var egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, egyptTimeZone);
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, egyptTimeZone);
+            var timeSpan = now - localTime;
+
+            if (timeSpan.TotalSeconds < 60)
+                return "منذ ثوانٍ";
+            if (timeSpan.TotalMinutes < 60)
+                return $"منذ {(int)timeSpan.TotalMinutes} دقيقة";
+            if (timeSpan.TotalHours < 24)
+                return $"منذ {(int)timeSpan.TotalHours} ساعة";
+            if (timeSpan.TotalDays < 2)
+                return "أمس";
+            if (timeSpan.TotalDays < 7)
+                return $"منذ {(int)timeSpan.TotalDays} أيام";
+            if (timeSpan.TotalDays < 30)
+                return $"منذ {(int)(timeSpan.TotalDays / 7)} أسبوع";
+            if (timeSpan.TotalDays < 365)
+                return $"منذ {(int)(timeSpan.TotalDays / 30)} شهر";
+            return $"منذ {(int)(timeSpan.TotalDays / 365)} سنة";
+        }
+
+
+
     }
 }
