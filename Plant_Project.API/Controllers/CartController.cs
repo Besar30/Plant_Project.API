@@ -1,25 +1,27 @@
-﻿using Plant_Project.API.contracts.Cart;
+﻿using Plant_Project.API.Abstraction;
+using Plant_Project.API.contracts.Cart;
 
 
 namespace Plant_Project.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class CartController(ICartServices cartServices) : ControllerBase
 {
     private readonly ICartServices _cartServices = cartServices;
 
     [HttpGet("{userId}")]
-    public async Task<IActionResult> GetAll([FromRoute] string userId, CancellationToken cancellationToken)
-    {
-        var result = await _cartServices.GetAllAsync(userId, cancellationToken);
+	public async Task<IActionResult> GetAll([FromRoute] string userId, CancellationToken cancellationToken)
+	{
+		var result = await _cartServices.GetAllAsync(userId, cancellationToken);
 
-		if (!result.IsSuccess || result.Value is null || result.Value.Count == 0)
-			return result.ToProblem(StatusCodes.Status404NotFound);
+		if (!result.IsSuccess)
+			return result.ToProblem(400);
 
-		return Ok(result.Value); 
+		return Ok(result.Value);
 	}
+
 	[HttpPost("")]
 	public async Task<IActionResult> AddToCart([FromBody] CartRequest request, CancellationToken cancellationToken)
 	{
