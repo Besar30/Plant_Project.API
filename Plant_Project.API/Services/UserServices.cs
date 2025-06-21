@@ -107,6 +107,8 @@ namespace Plant_Project.API.Services
             var userpost=await _context.Posts.Where(x=>x.UserId==UserId)
                                         .OrderByDescending(p => p.CreatedAt)
                                         .Include(p=>p.User)
+                                        .Include(p=>p.Reacts)
+                                        .Include(p=>p.Comments)
                                        .ToListAsync(cancellationToken);
             var respons = userpost.Select(p => new PostResponse (
                   p.Id,
@@ -114,7 +116,10 @@ namespace Plant_Project.API.Services
                   $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
                   p.User.UserName!,
                  $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
-                 p.Reacts.Count()
+                 p.Reacts.Count(),
+                 FormatDateFacebookStyle(p.CreatedAt),
+                 p.Comments.Count
+
                 )).ToList();
             return Result.Success(respons);
         }
@@ -146,5 +151,30 @@ namespace Plant_Project.API.Services
             await _context.SaveChangesAsync();
             return Result.Success();
         }
+        public static string FormatDateFacebookStyle(DateTime utcDateTime)
+        {
+            var egyptTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, egyptTimeZone);
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, egyptTimeZone);
+            var timeSpan = now - localTime;
+
+            if (timeSpan.TotalSeconds < 60)
+                return "منذ ثوانٍ";
+            if (timeSpan.TotalMinutes < 60)
+                return $"منذ {(int)timeSpan.TotalMinutes} دقيقة";
+            if (timeSpan.TotalHours < 24)
+                return $"منذ {(int)timeSpan.TotalHours} ساعة";
+            if (timeSpan.TotalDays < 2)
+                return "أمس";
+            if (timeSpan.TotalDays < 7)
+                return $"منذ {(int)timeSpan.TotalDays} أيام";
+            if (timeSpan.TotalDays < 30)
+                return $"منذ {(int)(timeSpan.TotalDays / 7)} أسبوع";
+            if (timeSpan.TotalDays < 365)
+                return $"منذ {(int)(timeSpan.TotalDays / 30)} شهر";
+            return $"منذ {(int)(timeSpan.TotalDays / 365)} سنة";
+        }
+
+
     }
 }

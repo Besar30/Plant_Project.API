@@ -43,7 +43,6 @@ namespace Plant_Project.API.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            
             Response.Cookies.Delete("accessToken");
             return Ok(new { message = "Logged out successfully" });
         }
