@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Plant_Project.API.contracts.Ai;
+using Plant_Project.API.Services;
 
 namespace Plant_Project.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("[controller]")]
 	[ApiController]
 	public class PlantDetectionController : ControllerBase
 	{
@@ -11,23 +12,23 @@ namespace Plant_Project.API.Controllers
 
 		public PlantDetectionController(IPlantDetectionService plantDetectionService)
 		{
-			_plantDetectionService = plantDetectionService ?? throw new ArgumentNullException(nameof(plantDetectionService));
+			_plantDetectionService = plantDetectionService;
 		}
 
 		[HttpPost("detect")]
 		public async Task<IActionResult> DetectPlant([FromForm] IFormFile file, CancellationToken cancellationToken)
 		{
 			if (file == null || file.Length == 0)
-				return BadRequest(new { success = false, message = "No file uploaded." });
+				return BadRequest("No file uploaded.");
 
 			var result = await _plantDetectionService.DetectPlantAsync(file, cancellationToken);
 
 			if (!result.IsSuccess)
 			{
-				return Ok(new PlantDetectionResponseDto
+				return BadRequest(new PlantDetectionResponseDto
 				{
 					Success = false,
-					Message = result.error.Discription ?? "An error occurred."
+					Message = result.error.Discription
 				});
 			}
 
