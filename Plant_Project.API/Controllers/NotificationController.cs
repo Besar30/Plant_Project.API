@@ -6,6 +6,7 @@ namespace Plant_Project.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NotificationController(INotificationService notificationService) : ControllerBase
     {
         private readonly INotificationService _notificationService = notificationService;
