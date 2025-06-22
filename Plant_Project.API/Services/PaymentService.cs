@@ -28,7 +28,16 @@ public class PaymentService : IPaymentService
 			if (cartItems.Count == 0)
 				return Result.Failure(CartErrors.CartEmpty);
 
-			// Prepare Order object (not saved yet)
+			foreach (var cartItem in cartItems)
+			{
+				if (cartItem.Plant.Quantity < cartItem.Quantity)
+				{
+					return Result.Failure(new Error("OutOfStock",
+						$"Insufficient stock for {cartItem.Plant.Name}. " +
+						$"Available: {cartItem.Plant.Quantity}"));
+				}
+			}
+
 			var order = new Order
 			{
 				UserId = request.UserId,
@@ -46,11 +55,20 @@ public class PaymentService : IPaymentService
 				}).ToList()
 			};
 
-			// 🟢 Cash Payment (save directly as Pending)
 			if (request.PaymentMethod.Equals("Cash", StringComparison.OrdinalIgnoreCase))
 			{
 				order.PaymentStatus = "Pending";
 				_context.Orders.Add(order);
+				await _context.SaveChangesAsync(cancellationToken);
+
+				foreach (var item in order.OrderItems)
+				{
+					var plant = await _context.plants.FindAsync(item.PlantId);
+					if (plant != null)
+					{
+						plant.Quantity -= item.Quantity;
+					}
+				}
 				await _context.SaveChangesAsync(cancellationToken);
 
 				_context.Carts.RemoveRange(cartItems);
@@ -59,11 +77,9 @@ public class PaymentService : IPaymentService
 				return Result.Success();
 			}
 
-			// 💳 Card Payment (Visa / CreditCard)
 			if (request.CardDetails == null)
 				return Result.Failure(PaymentErrors.MissingCardDetails);
 
-			// Normalize cardType
 			string cardType = request.CardDetails.CardType?.Trim().ToLowerInvariant();
 
 			if (!CheckoutValidator.IsValidCardNumber(request.CardDetails.CardNumber))
@@ -75,19 +91,25 @@ public class PaymentService : IPaymentService
 			if (!CheckoutValidator.IsValidCVV(request.CardDetails.CVV, cardType))
 				return Result.Failure(PaymentErrors.InValidCVV);
 
-			// Process payment
 			var paymentResult = await ProcessPaymentAsync(order, request.PaymentMethod, request.CardDetails);
-
 			if (!paymentResult.Success)
 				return Result.Failure(PaymentErrors.PaymentFailer);
 
-			// ✅ Save only if payment succeeded
 			order.PaymentStatus = "Paid";
 			order.TransactionId = paymentResult.TransactionId;
 			_context.Orders.Add(order);
 			await _context.SaveChangesAsync(cancellationToken);
 
-			// Add payment record
+			foreach (var item in order.OrderItems)
+			{
+				var plant = await _context.plants.FindAsync(item.PlantId);
+				if (plant != null)
+				{
+					plant.Quantity -= item.Quantity;
+				}
+			}
+			await _context.SaveChangesAsync(cancellationToken);
+
 			var payment = new Payment
 			{
 				UserId = order.UserId,
@@ -98,8 +120,9 @@ public class PaymentService : IPaymentService
 				Status = "Succeeded",
 				CreatedAt = DateTime.UtcNow
 			};
-
 			_context.Payments.Add(payment);
+			await _context.SaveChangesAsync(cancellationToken);
+
 			_context.Carts.RemoveRange(cartItems);
 			await _context.SaveChangesAsync(cancellationToken);
 
@@ -111,6 +134,7 @@ public class PaymentService : IPaymentService
 			return Result.Failure(PaymentErrors.InternalError);
 		}
 	}
+
 
 	private async Task<PaymentResult> ProcessPaymentAsync(Order order, string paymentMethod, PaymentCardDetails cardDetails)
 	{

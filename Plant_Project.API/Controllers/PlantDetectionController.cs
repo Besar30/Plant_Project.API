@@ -1,9 +1,10 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Plant_Project.API.contracts.Ai;
+using Plant_Project.API.Services;
 
 namespace Plant_Project.API.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("[controller]")]
 	[ApiController]
 	public class PlantDetectionController : ControllerBase
 	{
@@ -11,7 +12,7 @@ namespace Plant_Project.API.Controllers
 
 		public PlantDetectionController(IPlantDetectionService plantDetectionService)
 		{
-			_plantDetectionService = plantDetectionService ?? throw new ArgumentNullException(nameof(plantDetectionService));
+			_plantDetectionService = plantDetectionService;
 		}
 
 		[HttpPost("detect")]
@@ -20,16 +21,23 @@ namespace Plant_Project.API.Controllers
 			if (file == null || file.Length == 0)
 				return BadRequest("No file uploaded.");
 
-			try
+			var result = await _plantDetectionService.DetectPlantAsync(file, cancellationToken);
+
+			if (!result.IsSuccess)
 			{
-				var result = await _plantDetectionService.DetectPlantAsync(file, cancellationToken);
-				return Ok(result);
+				return BadRequest(new PlantDetectionResponseDto
+				{
+					Success = false,
+					Message = result.error.Discription
+				});
 			}
-			catch (Exception ex)
+
+			return Ok(new PlantDetectionResponseDto
 			{
-				// Handle error and provide user-friendly error message
-				return StatusCode(500, new { message = "Error processing uploaded file", details = ex.Message });
-			}
+				Success = true,
+				Message = "Plant detected successfully.",
+				Data = result.Value
+			});
 		}
 	}
 }

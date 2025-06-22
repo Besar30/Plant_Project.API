@@ -42,12 +42,14 @@ namespace Plant_Project.API
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IReactServices, ReactServices>();
             services.AddAuthConfig(configuration);
+			services.AddSingleton<PlantDetectionMapper>();
 
-            services.AddSingleton<PlantDetectionMapper>();
-			services.AddScoped<IPlantDetectionService, PlantDetectionService>();
-			services.AddHttpClient<IPlantDetectionService, PlantDetectionService>();
+			services.AddHttpClient<IPlantDetectionService, PlantDetectionService>(client =>
+			{
+				client.BaseAddress = new Uri("https://planet-disease-arabic.onrender.com/");
+				client.Timeout = TimeSpan.FromSeconds(5); 
+			});
 
-			//services.AddHttpClient<TranslationService>();
 
 			var config = TypeAdapterConfig.GlobalSettings;
             config.NewConfig<ApplicationUser, UserProfileResponse>();

@@ -1,6 +1,5 @@
-﻿namespace Plant_Project.API.contracts.Ai;
-
-
+﻿namespace Plant_Project.API.contracts.Ai
+{
 	public class PlantDetectionMapper
 	{
 		public YourMappedResult Map(PlantDetectionResponse response)
@@ -10,23 +9,25 @@
 
 			var prediction = response.Prediction;
 
-			if (string.IsNullOrEmpty(prediction.Name) || prediction.Name.Contains("Background_without_leaves"))
+			// If no name returned from AI
+			if (string.IsNullOrEmpty(prediction.Name))
 			{
 				return new YourMappedResult
 				{
-					PlantName = "Unknown Plant", 
-					HasDisease = false,           
+					PlantName = "Unknown Plant",
+					HasDisease = false,
 					Disease = "No plant detected in the image.",
 					Solution = "Try using a clearer image with a visible plant.",
 					Accuracy = prediction.Accuracy ?? 0f
 				};
 			}
 
+			// If no cause => No disease
 			if (string.IsNullOrEmpty(prediction.Cause))
 			{
 				return new YourMappedResult
 				{
-					PlantName = prediction.Name ?? "Unknown Plant",
+					PlantName = prediction.Name,
 					HasDisease = false,
 					Disease = "No disease detected.",
 					Solution = "No solution available.",
@@ -34,16 +35,15 @@
 				};
 			}
 
+			// Disease detected
 			return new YourMappedResult
 			{
-				PlantName = prediction.Name ?? "Unknown Plant",
-				HasDisease = !string.IsNullOrEmpty(prediction.Cause),  // If there's no cause, we assume no disease
-				Disease = prediction.Cause ?? "No disease detected.",
+				PlantName = prediction.Name,
+				HasDisease = true,
+				Disease = prediction.Cause,
 				Solution = prediction.Cure ?? "No solution available.",
 				Accuracy = prediction.Accuracy ?? 0f
-
 			};
 		}
 	}
-
-
+}
