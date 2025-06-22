@@ -17,9 +17,16 @@
 	public record YourMappedResult
 	{
 		public string? PlantName { get; set; }
-		public bool HasDisease { get; set; }
+		public bool HasDisease { get; set; }  
 		public string? Disease { get; set; }
 		public string? Solution { get; set; }
 		public float? Accuracy { get; set; }
 	}
+	public class PlantDetectionResponseDto
+	{
+		public bool Success { get; set; }
+		public string? Message { get; set; }
+		public YourMappedResult? Data { get; set; }
+	}
+
 }

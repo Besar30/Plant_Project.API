@@ -19,7 +19,6 @@ namespace Plant_Project.API.Services
         private readonly int _refreshTokenExpiryDays = 14;
         public async Task<Result<AuthRespons>>GetTokenaync(string email, string password, CancellationToken cancellationToken = default)
             {
-                //check email correct
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null) {
                     return Result.Failure<AuthRespons>(UeserError.InvalidCerdentials);
@@ -28,7 +27,6 @@ namespace Plant_Project.API.Services
                 if (result.Succeeded)
                 {
                 var (userRoles, userPermissions) = await GetRolesAndPermissions(user, cancellationToken);
-                    //generate jwt
                     var (token, expiresIn) = _jwtProvider.GenerateToken(user,userRoles,userPermissions);
                     var refreshToken = GenerateRefreshToken();
                     var refreshTokenEXpirationDays = DateTime.UtcNow.AddDays(_refreshTokenExpiryDays);
@@ -38,18 +36,15 @@ namespace Plant_Project.API.Services
                         ExpiresOn = refreshTokenEXpirationDays
                     });
                     await _userManager.UpdateAsync(user);
-                //return authrespons
-                // تعديل السطر بحيث يتم تحويل expiresIn إلى DateTimeOffset
                 var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-                // تمرير expirationTime بدلاً من expiresIn
                 var resultt = new AuthRespons(
                     user.Id,
                     user.Email,
                     user.FirstName,
                     user.LastName,
                     token,
-                    expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                    expirationTime,   
                     refreshToken,
                     refreshTokenEXpirationDays,
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
@@ -57,8 +52,7 @@ namespace Plant_Project.API.Services
 
                 return Result.Success<AuthRespons>(resultt);
 
-            }
-            //401
+                }
             return Result.Failure<AuthRespons>(result.IsNotAllowed?UeserError.EmailNotComfirmed:UeserError.InvalidCerdentials);
             }
         public async Task<Result<AuthRespons>> GetRefeshTokenaync(string Token, string RefreshToken, CancellationToken cancellationToken = default)
@@ -83,14 +77,13 @@ namespace Plant_Project.API.Services
             await _userManager.UpdateAsync(user);
             var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-            // تمرير expirationTime بدلاً من expiresIn
             var resultt = new AuthRespons(
                 user.Id,
                 user.Email,
                 user.FirstName,
                 user.LastName,
                 Newtoken,
-                expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                expirationTime,   
                 RefreshToken,
                 refreshTokenEXpirationDays,
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
@@ -143,38 +136,22 @@ namespace Plant_Project.API.Services
                 });
 
                 await _userManager.UpdateAsync(user);
-                //return authrespons
                 var expirationTime = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
 
-                // تمرير expirationTime بدلاً من expiresIn
                 var resultt = new AuthRespons(
                     user.Id,
                     user.Email,
                     user.FirstName,
                     user.LastName,
                     token,
-                    expirationTime,   // هنا تمرر DateTimeOffset بدلاً من expiresIn
+                    expirationTime,   
                     refreshToken,
                     refreshTokenEXpirationDays,
                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{user.ImagePath}"
                 );
                 return Result.Success<AuthRespons>(resultt);
-                //var code= await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                ////var param = new Dictionary<string, string?>
-                ////{
-                ////    {"code",code },
-                ////    {"email",user.Email }
-                ////};
-                ////var callback=QueryHelpers.AddQueryString(MailSettings.ClientUri!, param);
-                ////await _emailSender.SendEmailAsync(user.Email, "Email confirmation Token", callback);
-
-                //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                //_logger.LogInformation("Comfirmation Code :{code}",code);
-                //////TODO:send email
-                //await SendConfirmation(user,code);
-                //return Result.Success();
+                
             }
-            //badRequest
             var error = result.Errors.First();
             return Result.Failure<AuthRespons>(new Error(error.Code, error.Description));
 

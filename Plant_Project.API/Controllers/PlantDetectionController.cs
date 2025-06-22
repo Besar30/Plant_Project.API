@@ -1,5 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Plant_Project.API.contracts.Ai;
 
 namespace Plant_Project.API.Controllers
 {
@@ -18,18 +18,25 @@ namespace Plant_Project.API.Controllers
 		public async Task<IActionResult> DetectPlant([FromForm] IFormFile file, CancellationToken cancellationToken)
 		{
 			if (file == null || file.Length == 0)
-				return BadRequest("No file uploaded.");
+				return BadRequest(new { success = false, message = "No file uploaded." });
 
-			try
+			var result = await _plantDetectionService.DetectPlantAsync(file, cancellationToken);
+
+			if (!result.IsSuccess)
 			{
-				var result = await _plantDetectionService.DetectPlantAsync(file, cancellationToken);
-				return Ok(result);
+				return Ok(new PlantDetectionResponseDto
+				{
+					Success = false,
+					Message = result.error.Discription ?? "An error occurred."
+				});
 			}
-			catch (Exception ex)
+
+			return Ok(new PlantDetectionResponseDto
 			{
-				// Handle error and provide user-friendly error message
-				return StatusCode(500, new { message = "Error processing uploaded file", details = ex.Message });
-			}
+				Success = true,
+				Message = "Plant detected successfully.",
+				Data = result.Value
+			});
 		}
 	}
 }

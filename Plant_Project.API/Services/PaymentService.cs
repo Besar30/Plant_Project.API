@@ -28,16 +28,16 @@ public class PaymentService : IPaymentService
 			if (cartItems.Count == 0)
 				return Result.Failure(CartErrors.CartEmpty);
 
-			// ✅ 1️⃣ Check stock availability BEFORE placing order
 			foreach (var cartItem in cartItems)
 			{
 				if (cartItem.Plant.Quantity < cartItem.Quantity)
 				{
-					return Result.Failure(new Error("OutOfStock", $"Insufficient stock for {cartItem.Plant.Name}. Available: {cartItem.Plant.Quantity}"));
+					return Result.Failure(new Error("OutOfStock",
+						$"Insufficient stock for {cartItem.Plant.Name}. " +
+						$"Available: {cartItem.Plant.Quantity}"));
 				}
 			}
 
-			// ✅ 2️⃣ Prepare Order object (not saved yet)
 			var order = new Order
 			{
 				UserId = request.UserId,
@@ -55,14 +55,12 @@ public class PaymentService : IPaymentService
 				}).ToList()
 			};
 
-			// ✅ 3️⃣ Handle Cash Payment
 			if (request.PaymentMethod.Equals("Cash", StringComparison.OrdinalIgnoreCase))
 			{
 				order.PaymentStatus = "Pending";
 				_context.Orders.Add(order);
 				await _context.SaveChangesAsync(cancellationToken);
 
-				// Decrease stock after saving order
 				foreach (var item in order.OrderItems)
 				{
 					var plant = await _context.plants.FindAsync(item.PlantId);
@@ -79,7 +77,6 @@ public class PaymentService : IPaymentService
 				return Result.Success();
 			}
 
-			// ✅ 4️⃣ Handle Card Payment
 			if (request.CardDetails == null)
 				return Result.Failure(PaymentErrors.MissingCardDetails);
 
@@ -103,7 +100,6 @@ public class PaymentService : IPaymentService
 			_context.Orders.Add(order);
 			await _context.SaveChangesAsync(cancellationToken);
 
-			// ✅ 5️⃣ Decrease stock after payment successful
 			foreach (var item in order.OrderItems)
 			{
 				var plant = await _context.plants.FindAsync(item.PlantId);
@@ -114,7 +110,6 @@ public class PaymentService : IPaymentService
 			}
 			await _context.SaveChangesAsync(cancellationToken);
 
-			// ✅ 6️⃣ Save Payment record
 			var payment = new Payment
 			{
 				UserId = order.UserId,
@@ -128,7 +123,6 @@ public class PaymentService : IPaymentService
 			_context.Payments.Add(payment);
 			await _context.SaveChangesAsync(cancellationToken);
 
-			// ✅ 7️⃣ Clear user's cart
 			_context.Carts.RemoveRange(cartItems);
 			await _context.SaveChangesAsync(cancellationToken);
 

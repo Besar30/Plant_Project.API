@@ -1,10 +1,14 @@
-﻿namespace Plant_Project.API.Services
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
+using Plant_Project.API.contracts.Ai;
+
+namespace Plant_Project.API.Services
 {
 	public class PlantDetectionService : IPlantDetectionService
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ILogger<PlantDetectionService> _logger;
-		private readonly PlantDetectionMapper _mapper; 
+		private readonly PlantDetectionMapper _mapper;
 
 		public PlantDetectionService(HttpClient httpClient, ILogger<PlantDetectionService> logger, PlantDetectionMapper mapper)
 		{
@@ -13,50 +17,60 @@
 			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 		}
 
-		// Endpoint to Detect Plant using an image file
-		public async Task<YourMappedResult> DetectPlantAsync(IFormFile file, CancellationToken cancellationToken = default)
+		public async Task<Result<YourMappedResult>> DetectPlantAsync(IFormFile file, CancellationToken cancellationToken = default)
 		{
 			if (file == null || file.Length == 0)
-				throw new ArgumentException("No file uploaded.", nameof(file));
+				return Result.Failure<YourMappedResult>(new Error("NO_FILE", "No file uploaded."));
 
 			using var content = new MultipartFormDataContent();
 			using var fileStream = file.OpenReadStream();
 			var streamContent = new StreamContent(fileStream);
-
 			streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
 			content.Add(streamContent, "img", file.FileName);
 
 			try
 			{
-				var response = await _httpClient.PostAsync("https://plant-disease-v2.onrender.com/api/predict", content, cancellationToken);
+				var response = await _httpClient.PostAsync("https://planet-disease-arabic.onrender.com/api/predict", content, cancellationToken);
+
+				var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+				_logger.LogInformation("AI Raw Response: {RawContent}", responseContent);
 
 				if (!response.IsSuccessStatusCode)
 				{
-					var errorDetails = await response.Content.ReadAsStringAsync(cancellationToken);
-					_logger.LogError($"Error from AI model: {response.StatusCode} - {errorDetails}");
-					throw new Exception($"AI model error: {response.StatusCode} - {errorDetails}");
+					_logger.LogError("AI model error: {StatusCode} - {Error}", response.StatusCode, responseContent);
+					return Result.Failure<YourMappedResult>(new Error("AI_MODEL_ERROR", "AI service failed to process the image."));
 				}
 
-				var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-				var plantDetectionResponse = await JsonSerializer.DeserializeAsync<PlantDetectionResponse>(
-					responseStream,
-					new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-					cancellationToken);
+				var plantDetectionResponse = JsonSerializer.Deserialize<PlantDetectionResponse>(
+					responseContent,
+					new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-				if (plantDetectionResponse?.Prediction == null || string.IsNullOrEmpty(plantDetectionResponse.Prediction.Name))
+				if (plantDetectionResponse == null || plantDetectionResponse.Prediction == null)
 				{
-					throw new Exception("Unable to detect the plant or disease. Please try another image.");
+					_logger.LogWarning("AI returned no prediction.");
+					var fallbackResult = new YourMappedResult
+					{
+						PlantName = "Unknown Plant",
+						HasDisease = false,
+						Disease = "No plant detected.",
+						Solution = "Please upload a clearer image.",
+						Accuracy = 0
+					};
+					return Result.Success(fallbackResult);
 				}
 
-				var result = _mapper.Map(plantDetectionResponse);
-
-				return result;
+				var mappedResult = _mapper.Map(plantDetectionResponse);
+				return Result.Success(mappedResult);
+			}
+			catch (JsonException jsonEx)
+			{
+				_logger.LogError(jsonEx, "JSON deserialization error.");
+				return Result.Failure<YourMappedResult>(new Error("INVALID_AI_RESPONSE", "Received unexpected response from AI."));
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error detecting plant disease.");
-				throw new Exception("Error processing the image. Please ensure the image is clear and try again.", ex);
+				_logger.LogError(ex, "General error detecting plant disease.");
+				return Result.Failure<YourMappedResult>(new Error("SERVER_ERROR", "An error occurred while processing the image."));
 			}
 		}
 	}

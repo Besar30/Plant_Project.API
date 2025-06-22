@@ -3,7 +3,7 @@ namespace Plant_Project.API.Services;
 
 public interface IPlantDetectionService
 {
-	Task<YourMappedResult> DetectPlantAsync(IFormFile file, CancellationToken cancellationToken = default);
+	Task<Result<YourMappedResult>> DetectPlantAsync(IFormFile file, CancellationToken cancellationToken = default);
 
 }
 

@@ -6,11 +6,12 @@ public class OrderService : IOrderService
 {
 	private readonly ApplicationDbContext _context;
 	private readonly UserManager<ApplicationUser> _userManager;
-
-	public OrderService(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+	private readonly ILogger<OrderService> _logger;
+	public OrderService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<OrderService> logger)
 	{
 		_userManager = userManager;
 		_context = context;
+		_logger = logger;
 	}
 
 	public async Task<Result<List<OrderResponse>>> ShowOrderAsync(OrderRequest request, CancellationToken cancellationToken)
@@ -75,4 +76,49 @@ public class OrderService : IOrderService
 		return response;
 	}
 
+
+
+
+	public async Task<Result> DeleteOrderAsync(int orderId, CancellationToken cancellationToken = default)
+	{
+		var order = await _context.Orders
+			.Include(o => o.Payments)
+			.FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
+
+		if (order == null)
+			return Result.Failure(new Error("ORDER_NOT_FOUND", "Order not found."));
+
+		// Delete related payments first
+		var payments = await _context.Payments
+			.Where(p => p.OrderId == orderId)
+			.ToListAsync(cancellationToken);
+
+		_context.Payments.RemoveRange(payments);
+		_context.Orders.Remove(order);
+
+		await _context.SaveChangesAsync(cancellationToken);
+		return Result.Success();
+	}
+
+
+	public async Task<Result> UpdateOrderAsync(UpdateOrderRequest request, CancellationToken cancellationToken = default)
+	{
+			var order = await _context.Orders.FindAsync(request.OrderId);
+
+			if (order == null)
+				return Result.Failure(new Error("ORDER_NOT_FOUND", "Order not found."));
+
+			if (order.PaymentStatus == "Paid")
+			{
+				return Result.Failure(new Error("ORDER_ALREADY_PAID", "Cannot update a paid order."));
+			}
+
+			order.Address = request.Address;
+			order.PaymentMethod = request.PaymentMethod;
+
+			await _context.SaveChangesAsync(cancellationToken);
+
+			return Result.Success();
+	}
 }
+
