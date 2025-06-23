@@ -19,7 +19,7 @@ namespace Plant_Project.API.Services
         {
 
             var query = _context.plants
-                          .Include(p => p.Category) // تحميل العلاقة مع التصنيف
+                          .Include(p => p.Category) 
                          .Select(p => new PlantsResponse(
                              p.Id,
                              p.Name,
@@ -75,13 +75,10 @@ namespace Plant_Project.API.Services
 
             if (request.ImagePath != null)
             {
-                // إذا كانت الصورة الجديدة مختلفة عن القديمة
                 if (!Plant.ImagePath.Equals(request.ImagePath.FileName, StringComparison.OrdinalIgnoreCase))
                 {
-                    // مسح الصورة القديمة
                     DeleteImage(Plant.ImagePath);
 
-                    // حفظ الصورة الجديدة
                     string newImagePath = await SaveImageAsync(request.ImagePath);
                     // var absUri = $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{newImagePath}";
                     Plant.ImagePath = newImagePath;
