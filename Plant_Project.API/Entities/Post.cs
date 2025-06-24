@@ -10,10 +10,8 @@
         //user
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser User { get; set; } = null!;
-
         //comment
         public List<Comment> Comments { get; set; } = new();
-
         public List<React> Reacts { get; set; } = new();
     }
 }

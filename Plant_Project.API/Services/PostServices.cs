@@ -22,16 +22,20 @@ namespace Plant_Project.API.Services
                             .ToListAsync(cancellationToken);
 
             var result = posts.Select(p => new PostResponse
-            (
-                p.Id,
-                p.Content,
-                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
-                p.User.UserName!,
-                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
-                p.Reacts.Count,
-                FormatDateFacebookStyle(p.CreatedAt),
-                p.Comments.Count
-            )).ToList();
+(
+                    p.Id,
+                    p.Content,
+                    string.IsNullOrEmpty(p.ImagePath)
+                        ? null
+                        : $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.ImagePath}",
+                    p.User.UserName!,
+                    string.IsNullOrEmpty(p.User.ImagePath)
+                        ? null
+                        : $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{p.User.ImagePath}",
+                    p.Reacts.Count,
+                    FormatDateFacebookStyle(p.CreatedAt),
+                    p.Comments.Count
+                    )).ToList();
 
             return Result.Success(result);
         }
@@ -74,15 +78,19 @@ namespace Plant_Project.API.Services
                 return Result.Failure<PostResponse>(PostErrors.PostNotFound);
 
             var response = new PostResponse(
-                post.Id,
-                post.Content,
-                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.ImagePath}",
-                post.User.UserName!,
-               $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.User.ImagePath}",
-                post.Reacts.Count,
-                FormatDateFacebookStyle(post.CreatedAt),
-                post.Comments.Count
-            );
+                    post.Id,
+                    post.Content,
+                    string.IsNullOrEmpty(post.ImagePath)
+                        ? null
+                        : $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.ImagePath}",
+                    post.User.UserName!,
+                    string.IsNullOrEmpty(post.User.ImagePath)
+                        ? null
+                        : $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{post.User.ImagePath}",
+                    post.Reacts.Count,
+                    FormatDateFacebookStyle(post.CreatedAt),
+                    post.Comments.Count
+                );
 
             return Result.Success(response);
         }
