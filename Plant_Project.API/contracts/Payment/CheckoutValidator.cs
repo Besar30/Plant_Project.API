@@ -9,7 +9,7 @@ public static class CheckoutValidator
 		cardNumber = cardNumber.Replace(" ", ""); // Remove spaces
 
 		if (!Regex.IsMatch(cardNumber, "^[0-9]{13,19}$"))
-			return false; // Invalid length
+			return false; 
 
 		return LuhnCheck(cardNumber);
 	}
@@ -56,8 +56,7 @@ public static class CheckoutValidator
 
 		return cardType.ToLowerInvariant() switch
 		{
-			"amex" or "americanexpress" => Regex.IsMatch(cvv, @"^\d{4}$"),
-			"visa" or "mastercard" or "discover" => Regex.IsMatch(cvv, @"^\d{3}$"),
+			"visa" or "creditcard" => Regex.IsMatch(cvv, @"^\d{3}$"), // ✅ فقط Visa و CreditCard
 			_ => false
 		};
 	}
