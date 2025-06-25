@@ -4,13 +4,11 @@
 	{
 		public YourMappedResult Map(PlantDetectionResponse response)
 		{
-			if (response == null || response.Prediction == null)
-				throw new ArgumentNullException(nameof(response), "Plant detection response cannot be null or empty.");
-
-			var prediction = response.Prediction;
+			if (response == null)
+				throw new ArgumentNullException(nameof(response), "Plant detection response cannot be null.");
 
 			// If no name returned from AI
-			if (string.IsNullOrEmpty(prediction.Name))
+			if (string.IsNullOrWhiteSpace(response.Name))
 			{
 				return new YourMappedResult
 				{
@@ -18,31 +16,31 @@
 					HasDisease = false,
 					Disease = "No plant detected in the image.",
 					Solution = "Try using a clearer image with a visible plant.",
-					Accuracy = prediction.Accuracy ?? 0f
+					Accuracy = response.Accuracy ?? 0f
 				};
 			}
 
 			// If no cause => No disease
-			if (string.IsNullOrEmpty(prediction.Cause))
+			if (string.IsNullOrWhiteSpace(response.Cause))
 			{
 				return new YourMappedResult
 				{
-					PlantName = prediction.Name,
+					PlantName = response.Name,
 					HasDisease = false,
 					Disease = "No disease detected.",
 					Solution = "No solution available.",
-					Accuracy = prediction.Accuracy ?? 0f
+					Accuracy = response.Accuracy ?? 0f
 				};
 			}
 
 			// Disease detected
 			return new YourMappedResult
 			{
-				PlantName = prediction.Name,
+				PlantName = response.Name,
 				HasDisease = true,
-				Disease = prediction.Cause,
-				Solution = prediction.Cure ?? "No solution available.",
-				Accuracy = prediction.Accuracy ?? 0f
+				Disease = response.Cause,
+				Solution = response.Cure ?? "No treatment available.",
+				Accuracy = response.Accuracy ?? 0f
 			};
 		}
 	}

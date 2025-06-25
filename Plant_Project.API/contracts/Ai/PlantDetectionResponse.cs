@@ -4,26 +4,23 @@ namespace Plant_Project.API.contracts.Ai
 {
 	public class PlantDetectionResponse
 	{
-		[JsonPropertyName("image_url")]
-		public string? ImageUrl { get; set; }
-
-		[JsonPropertyName("prediction")]
-		public Prediction? Prediction { get; set; }
-	}
-
-	public class Prediction
-	{
-		[JsonPropertyName("الاسم")]
+		[JsonPropertyName("disease_name")]
 		public string? Name { get; set; }
 
-		[JsonPropertyName("السبب")]
+		[JsonPropertyName("cause")]
 		public string? Cause { get; set; }
 
-		[JsonPropertyName("العلاج")]
+		[JsonPropertyName("treatment")]
 		public string? Cure { get; set; }
 
-		[JsonPropertyName("الدقه")]
+		[JsonPropertyName("accuracy")]
 		public string? AccuracyText { get; set; }
+
+		[JsonPropertyName("message")]
+		public string? Message { get; set; }
+
+		[JsonPropertyName("success")]
+		public bool Success { get; set; }
 
 		[JsonIgnore]
 		public float? Accuracy
@@ -35,13 +32,13 @@ namespace Plant_Project.API.contracts.Ai
 
 				var numericPart = AccuracyText.Replace("%", "").Trim();
 				if (float.TryParse(numericPart, out float result))
-				{
 					return result;
-				}
+
 				return null;
 			}
 		}
 	}
+
 
 	public record YourMappedResult
 	{

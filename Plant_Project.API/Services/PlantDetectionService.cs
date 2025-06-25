@@ -27,11 +27,11 @@ namespace Plant_Project.API.Services
 			using var fileStream = file.OpenReadStream();
 			var streamContent = new StreamContent(fileStream);
 			streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-			content.Add(streamContent, "img", file.FileName);
+			content.Add(streamContent, "image", file.FileName); // Corrected key name
 
 			try
 			{
-				var response = await _httpClient.PostAsync("https://planet-disease-arabic.onrender.com/api/predict", content, cancellationToken);
+				var response = await _httpClient.PostAsync("https://planet-disease-arabic.onrender.com/predict", content, cancellationToken);
 
 				if (!response.IsSuccessStatusCode)
 				{
@@ -45,7 +45,7 @@ namespace Plant_Project.API.Services
 					responseContent,
 					new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-				if (plantDetectionResponse?.Prediction == null)
+				if (plantDetectionResponse == null || string.IsNullOrWhiteSpace(plantDetectionResponse.Name))
 				{
 					return Result.Failure<YourMappedResult>(new Error("Empty", "No prediction found."));
 				}
