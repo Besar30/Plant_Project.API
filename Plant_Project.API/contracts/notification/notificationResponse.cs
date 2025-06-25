@@ -6,7 +6,8 @@
         DateTime CreatedAt,
         int PostId,
         string ImageUrl,
-        string CommenterName
+        string CommenterName,
+        int NotificationId
         );
     
 }

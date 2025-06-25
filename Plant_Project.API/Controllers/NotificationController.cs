@@ -18,5 +18,12 @@ namespace Plant_Project.API.Controllers
             return result.IsSuccess? 
                 Ok(result): result.ToProblem(StatusCodes.Status400BadRequest);
         }
+        [HttpGet("post/{postId}/notification/{notificationId}")]
+        public async Task<IActionResult> GetPostByNotification([FromRoute] int postId, [FromRoute] int notificationId)
+        { 
+            var resut = await _notificationService.GetPostInNotification(postId, notificationId);
+            return resut.IsSuccess?
+                Ok(resut):resut.ToProblem(StatusCodes.Status400BadRequest);
+        }
     }
 }
