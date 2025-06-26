@@ -14,7 +14,7 @@
             return Ok(result);
         }
         //https://localhost:7286/api/Plant
-        //[Authorize(Roles = DefaultRoles.Admin)]
+        [Authorize(Roles = DefaultRoles.Admin)]
         [HttpPost("")]
         public async Task<IActionResult> AddPlantAsync([FromForm] PlantsRequest request,CancellationToken cancellationToken)
         {
