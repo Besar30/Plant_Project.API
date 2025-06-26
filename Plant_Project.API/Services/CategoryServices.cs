@@ -32,31 +32,26 @@ namespace Plant_Project.API.Services
 
         public async Task<Result<CategoryResponse>> GetCategoryByIdAsync(int Id, CancellationToken cancellation)
         {
-            var cacheKey = $"{_cachePerfix}-{Id}";
-            var category = await _icacheService.GetAsync<CategoryResponse>(cacheKey, cancellation);
-            
-            if (category is not null)
+            var result = await _Context.categories
+                .AsNoTracking()
+                .Where(x => x.Id == Id)
+                .FirstOrDefaultAsync(cancellation);
+
+            if (result == null)
             {
-                _logger.LogInformation("get by cache");
-               return Result.Success(category);
+                return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
             }
-            _logger.LogInformation("get by database");
 
-            var result = await _Context.categories.Where(x => x.Id == Id).FirstOrDefaultAsync(cancellation);
+            var category = new CategoryResponse(
+                result.Id,
+                result.Name,
+                result.Description,
+                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}"
+            );
 
-                if (result == null)
-                {
-                    return Result.Failure<CategoryResponse>(CategoryError.CategoryNotFound);
-                }
-                category = new CategoryResponse(
-                    result.Id,
-                    result.Name,
-                    result.Description,
-                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{result.ImagePath}"
-                    );
-                await _icacheService.SetAsync(cacheKey,category, cancellation);
             return Result.Success(category);
         }
+
 
         public async Task<Result> AddCategoryAsync(CategoryRequest request, CancellationToken cancellationToken)
         {

@@ -25,11 +25,13 @@ else
 	app.UseExceptionHandler("/error");
 	app.UseHsts();
 }
+app.UseCors("AllowSpecificOrigins");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.MapHub<NotificationHub>("/notificationHub");
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
