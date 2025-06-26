@@ -12,20 +12,24 @@ namespace Plant_Project.API.Services
         private readonly IcacheService _icacheService = icacheService;
         private readonly ILogger<CategoryServices> _logger = logger;
         private const string _cachePerfix = "availableCategory";
-        public async Task<Result<PaginatedList<CategoryResponse>>> GetAllCategoriesAsync(RequestFilters Filters,CancellationToken cancellationToken)
+        public async Task<Result<List<CategoryResponse>>> GetAllCategoriesAsync(RequestFilters Filters, CancellationToken cancellationToken)
         {
-            var result = await _Context.categories.AsNoTracking().ToListAsync(cancellationToken);
-            var query = _Context.categories
-                            .AsNoTracking()
-                            .Select(x => new CategoryResponse(
-                                x.Id,
-                                x.Name,
-                                x.Description,
-                                $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}"
-                            ));
-           var responses = await PaginatedList<CategoryResponse>.CreateAsync(query.AsQueryable(), Filters.PageNumber, Filters.PageSize, cancellationToken);
-            return Result.Success(responses);
+            var result = await _Context.categories
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var categories = result
+                .Select(x => new CategoryResponse(
+                    x.Id,
+                    x.Name,
+                    x.Description,
+                    $"{_httpContextAccessor.HttpContext!.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{x.ImagePath}"
+                ))
+                .ToList();
+
+            return Result.Success(categories);
         }
+
         public async Task<Result<CategoryResponse>> GetCategoryByIdAsync(int Id, CancellationToken cancellation)
         {
             var cacheKey = $"{_cachePerfix}-{Id}";
@@ -59,6 +63,7 @@ namespace Plant_Project.API.Services
             var result = await _Context.categories.AnyAsync(x=>x.Name==request.Name,cancellationToken);
             if (result)
                 return Result.Failure(CategoryError.CategoryDublicated);
+
             string imagePath = await SaveImageAsync(request.ImagePath);
             var category = new Category
             {
@@ -162,5 +167,7 @@ namespace Plant_Project.API.Services
 
             return "/images/" + uniqueFileName;
         }
+
+       
     }
 }
